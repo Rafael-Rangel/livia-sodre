@@ -9,12 +9,12 @@ export type StoryBeat = {
   showCta?: boolean;
 };
 
-/** Beats synced to the 4 Pro chapters currently on the scroll-film (~245 frames). */
+/** Beats for hero-master (0–67%) + sora-hero-8s extension (67–100%). */
 export const storyBeats: StoryBeat[] = [
   {
     id: "limiar",
     from: 0,
-    to: 0.18,
+    to: 0.12,
     eyebrow: "O Ritual do Cuidar",
     script: "cuidado",
     title: "Lívia Sodré",
@@ -22,27 +22,35 @@ export const storyBeats: StoryBeat[] = [
   },
   {
     id: "entrada",
-    from: 0.18,
-    to: 0.4,
+    from: 0.12,
+    to: 0.28,
     eyebrow: "Entrada",
     title: "Cruze o limiar",
     body: "A câmera te acompanha pela porta. O espaço respira com você.",
   },
   {
     id: "recepcao",
-    from: 0.4,
-    to: 0.68,
+    from: 0.28,
+    to: 0.48,
     eyebrow: "Recepção",
     title: "Seu atendimento começa aqui",
     body: "Luz quente, flores e acolhimento — do primeiro olhar ao cuidado.",
   },
   {
     id: "acolhimento",
-    from: 0.68,
-    to: 0.88,
+    from: 0.48,
+    to: 0.67,
     eyebrow: "Acolhimento",
     title: "Você é vista de verdade",
     body: "Aqui você é cuidada por quem realmente faz a diferença.",
+  },
+  {
+    id: "atmosfera",
+    from: 0.67,
+    to: 0.88,
+    eyebrow: "Ambiente",
+    title: "Tecnologia e cuidado em cada detalhe",
+    body: "O espaço continua — texturas, luz e a calma de um ritual premium.",
   },
   {
     id: "convite",
