@@ -23,7 +23,8 @@ type Manifest = {
   scrollPinVh: number;
 };
 
-const BATCH = 12;
+const BATCH = 10;
+const PRELOAD = 10;
 
 function supportsAvif() {
   try {
@@ -67,7 +68,7 @@ export function ScrollCanvasHero() {
       const canvas = canvasRef.current;
       const bmp = frames.current[frameIndex.current];
       if (!canvas || !bmp) return;
-      const ctx = canvas.getContext("2d", { alpha: false });
+      const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
       if (!ctx) return;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -78,13 +79,15 @@ export function ScrollCanvasHero() {
         canvas.height = Math.floor(h * dpr);
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
 
       const scale = Math.max(w / bmp.width, h / bmp.height);
       const dw = bmp.width * scale;
       const dh = bmp.height * scale;
       const dx = (w - dw) / 2;
       const dy = (h - dh) / 2;
-      ctx.fillStyle = "#f0e6d8";
+      ctx.fillStyle = "#ede4d6";
       ctx.fillRect(0, 0, w, h);
       ctx.drawImage(bmp, dx, dy, dw, dh);
     };
@@ -105,7 +108,10 @@ export function ScrollCanvasHero() {
       }
     };
 
-    const warmFirst = Array.from({ length: Math.min(8, manifest.total) }, (_, i) => i);
+    const warmFirst = Array.from(
+      { length: Math.min(PRELOAD, manifest.total) },
+      (_, i) => i,
+    );
     worker.postMessage({
       type: "WARM",
       indices: warmFirst,
@@ -207,7 +213,7 @@ export function ScrollCanvasHero() {
           start: "top top",
           end: `+=${manifest.scrollPinVh}%`,
           pin: true,
-          scrub: 0.65,
+          scrub: 0.55,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -274,7 +280,7 @@ export function ScrollCanvasHero() {
       <section className="texture relative flex min-h-[100svh] items-end px-5 pb-16 pt-28 md:px-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/cinematic/frames/frame-095.webp"
+          src="/cinematic/frames/frame-000.webp"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -283,7 +289,7 @@ export function ScrollCanvasHero() {
           <h1 className="display mt-4 text-5xl text-[var(--chocolate)] md:text-7xl">
             {brand.name}
           </h1>
-          <p className="script mt-4 text-4xl text-[var(--gold)]">Beleza que transforma</p>
+          <p className="script mt-4 text-4xl text-[var(--gold)]">cuidado</p>
           <div className="mt-8 flex gap-3">
             <Link href="/agendar" className="btn-primary">
               Agendar agora
@@ -317,27 +323,28 @@ export function ScrollCanvasHero() {
           fetchPriority="high"
         />
       )}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(250,246,240,0.72)] via-[rgba(250,246,240,0.28)] to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgba(44,31,26,0.35)] via-transparent to-[rgba(250,246,240,0.2)]" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(250,246,240,0.78)] via-[rgba(250,246,240,0.22)] to-transparent md:via-[rgba(250,246,240,0.12)]" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgba(31,22,18,0.42)] via-transparent to-[rgba(250,246,240,0.15)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[rgba(250,246,240,0.45)] to-transparent" />
 
       <div
         ref={overlayRef}
         className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-5 pb-16 pt-28 md:justify-center md:px-8 md:pb-24"
       >
-        <div className="max-w-xl pointer-events-auto">
+        <div className="max-w-xl pointer-events-auto md:max-w-2xl">
           <p className="cine-eyebrow eyebrow text-[var(--gold-dim)]">
             {brand.subtitle}
           </p>
-          <p className="cine-script script mt-6 text-[clamp(2.4rem,7vw,4.2rem)] text-[var(--gold)]">
+          <p className="cine-script script mt-6 text-[clamp(2.6rem,8vw,4.6rem)] text-[var(--gold)] drop-shadow-[0_8px_30px_rgba(44,31,26,0.12)]">
             cuidado
           </p>
           <p className="cine-quote mt-5 max-w-md text-sm leading-relaxed text-[var(--brown)] md:text-base">
             Aqui você é cuidada por quem realmente faz a diferença.
           </p>
-          <h1 className="cine-title display mt-8 text-[clamp(2.6rem,7vw,5.2rem)] leading-[0.92] text-[var(--chocolate)]">
+          <h1 className="cine-title display mt-8 text-[clamp(2.8rem,7.5vw,5.6rem)] leading-[0.9] text-[var(--chocolate)]">
             {brand.name}
           </h1>
-          <p className="cine-sub mt-4 max-w-md text-[var(--muted)] leading-relaxed">
+          <p className="cine-sub mt-4 max-w-lg text-[var(--muted)] leading-relaxed">
             {brand.tagline}
           </p>
           <div className="cine-ctas mt-8 flex flex-wrap gap-3 opacity-0">
