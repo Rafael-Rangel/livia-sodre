@@ -23,6 +23,11 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 
     lenis.on("scroll", ScrollTrigger.update);
 
+    // Keep section triggers in sync after long cinematic pin
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    const t = window.setTimeout(refresh, 1200);
+
     const update = (time: number) => {
       lenis.raf(time * 1000);
     };
@@ -30,6 +35,8 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("load", refresh);
       gsap.ticker.remove(update);
       lenis.destroy();
     };

@@ -21,6 +21,7 @@ type Manifest = {
   basePath: string;
   poster: string;
   scrollPinVh: number;
+  startFrame?: number;
 };
 
 const BATCH = 16;
@@ -79,23 +80,29 @@ export function ScrollCanvasHero() {
     if (!manifest || reduced) return;
 
     const preferAvif = supportsAvif() && manifest.formats.includes("avif");
+    const startFrame = Math.min(
+      Math.max(0, manifest.startFrame ?? 0),
+      Math.max(0, manifest.total - 1),
+    );
+    const lastFrame = manifest.total - 1;
+    const span = Math.max(1, lastFrame - startFrame);
+
     frames.current = Array.from({ length: manifest.total }, () => null);
     let loadedCount = 0;
+    let lastDrawn = -1;
 
     const worker = new Worker(
       new URL("../../workers/frame-loader.worker.ts", import.meta.url),
     );
     workerRef.current = worker;
 
+    // Begin scrubbing from first meaningful frame (skip cream void)
+    targetFrame.current = startFrame;
+    drawFrame.current = startFrame;
+
     const draw = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-
-      const ideal = Math.round(drawFrame.current);
-      const idx = nearestLoaded(frames.current, ideal);
-      if (idx < 0) return;
-      const bmp = frames.current[idx];
-      if (!bmp) return;
 
       const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
       if (!ctx) return;
@@ -113,11 +120,22 @@ export function ScrollCanvasHero() {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
+      // Never leave a blank/white canvas
+      ctx.fillStyle = "#ede4d6";
+      ctx.fillRect(0, 0, w, h);
+
+      const ideal = Math.round(drawFrame.current);
+      let idx = nearestLoaded(frames.current, ideal);
+      if (idx < 0 && lastDrawn >= 0) idx = lastDrawn;
+      if (idx < 0) return;
+
+      const bmp = frames.current[idx];
+      if (!bmp) return;
+      lastDrawn = idx;
+
       const scale = Math.max(w / bmp.width, h / bmp.height);
       const dw = bmp.width * scale;
       const dh = bmp.height * scale;
-      ctx.fillStyle = "#ede4d6";
-      ctx.fillRect(0, 0, w, h);
       ctx.drawImage(bmp, (w - dw) / 2, (h - dh) / 2, dw, dh);
     };
 
@@ -152,28 +170,35 @@ export function ScrollCanvasHero() {
         frames.current[msg.index] = msg.bitmap;
         loadedCount += 1;
         setProgress(Math.round((loadedCount / manifest.total) * 100));
-        if (msg.index === 0 || loadedCount === 1) setReady(true);
+        if (msg.index === startFrame || loadedCount === 1) setReady(true);
         const ideal = Math.round(drawFrame.current);
         if (Math.abs(msg.index - ideal) <= 2) scheduleDraw();
+        if (loadedCount >= Math.min(12, span + 1)) {
+          ScrollTrigger.refresh();
+        }
       }
     };
 
-    // Priority first frames for instant scrub start
+    // Priority: start from first meaningful frame
+    const warmIndices = Array.from(
+      { length: Math.min(PRELOAD, span + 1) },
+      (_, i) => startFrame + i,
+    );
     worker.postMessage({
       type: "WARM",
-      indices: Array.from({ length: Math.min(PRELOAD, manifest.total) }, (_, i) => i),
+      indices: warmIndices,
       basePath: manifest.basePath,
       pad: manifest.pad,
       preferAvif,
     } satisfies WorkerRequest);
 
-    // Then stream the rest in parallel batches
+    // Then stream the rest in parallel batches (from startFrame)
     let loadedBatch = 0;
-    const totalBatches = Math.ceil(manifest.total / BATCH);
+    const totalBatches = Math.ceil((span + 1) / BATCH);
     const loadNextBatch = () => {
       if (loadedBatch >= totalBatches) return;
-      const start = loadedBatch * BATCH;
-      const end = Math.min(manifest.total - 1, start + BATCH - 1);
+      const start = startFrame + loadedBatch * BATCH;
+      const end = Math.min(lastFrame, start + BATCH - 1);
       worker.postMessage({
         type: "LOAD_RANGE",
         start,
@@ -277,14 +302,18 @@ export function ScrollCanvasHero() {
           fastScrollEnd: true,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const idx = Math.min(
-              manifest.total - 1,
-              Math.max(0, Math.round(self.progress * (manifest.total - 1))),
+            const start = Math.min(
+              Math.max(0, manifest.startFrame ?? 0),
+              Math.max(0, manifest.total - 1),
             );
+            const end = manifest.total - 1;
+            const idx = Math.round(start + self.progress * (end - start));
             (
               section as HTMLElement & { __setFrame?: (i: number) => void }
-            ).__setFrame?.(idx);
+            ).__setFrame?.(Math.min(end, Math.max(start, idx)));
           },
+          onLeave: () => ScrollTrigger.refresh(),
+          onEnterBack: () => ScrollTrigger.refresh(),
         },
       });
 

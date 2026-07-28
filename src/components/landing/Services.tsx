@@ -37,16 +37,29 @@ export function Services() {
 
   useGSAP(
     () => {
-      gsap.from(".svc-item", {
-        scrollTrigger: { trigger: root.current, start: "top 75%" },
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.08,
-        ease: "power2.out",
-      });
+      const items = root.current?.querySelectorAll(".svc-item");
+      if (!items?.length) return;
+
+      gsap.fromTo(
+        items,
+        { y: 28, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.7,
+          stagger: 0.06,
+          ease: "power2.out",
+          overwrite: "auto",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+            once: true,
+          },
+        },
+      );
     },
-    { scope: root, dependencies: [filter] },
+    { scope: root, dependencies: [filter], revertOnUpdate: true },
   );
 
   return (

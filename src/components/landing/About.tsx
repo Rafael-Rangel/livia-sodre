@@ -13,14 +13,26 @@ export function About() {
 
   useGSAP(
     () => {
-      gsap.from(".about-reveal", {
-        scrollTrigger: { trigger: root.current, start: "top 75%" },
-        y: 36,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.12,
-        ease: "power2.out",
-      });
+      const items = root.current?.querySelectorAll(".about-reveal");
+      if (!items?.length) return;
+
+      gsap.fromTo(
+        items,
+        { y: 28, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+            once: true,
+          },
+        },
+      );
     },
     { scope: root },
   );

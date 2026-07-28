@@ -1,41 +1,19 @@
 ﻿{
-    "width":  1280,
-    "total":  203,
-    "basePath":  "/cinematic/frames",
-    "source":  "ritual-cuidar-4-chapters-sora2",
-    "quality":  "continuous",
-    "scrollPinVh":  520,
-    "formats":  [
-                    "avif",
-                    "webp"
-                ],
-    "chapters":  [
-                     {
-                         "title":  "Limiar",
-                         "end":  49,
-                         "id":  "limiar",
-                         "start":  0
-                     },
-                     {
-                         "title":  "Acolhimento",
-                         "end":  99,
-                         "id":  "acolhimento",
-                         "start":  50
-                     },
-                     {
-                         "title":  "Ritual",
-                         "end":  149,
-                         "id":  "ritual",
-                         "start":  100
-                     },
-                     {
-                         "title":  "Renascimento",
-                         "end":  202,
-                         "id":  "renascimento",
-                         "start":  150
-                     }
-                 ],
-    "height":  720,
-    "poster":  "/cinematic/frames/frame-000.webp",
-    "pad":  3
+  "width": 1280,
+  "height": 720,
+  "total": 203,
+  "startFrame": 22,
+  "pad": 3,
+  "basePath": "/cinematic/frames",
+  "source": "ritual-cuidar-4-chapters-sora2",
+  "quality": "continuous",
+  "scrollPinVh": 360,
+  "formats": ["avif", "webp"],
+  "poster": "/cinematic/frames/frame-040.webp",
+  "chapters": [
+    { "title": "Limiar", "id": "limiar", "start": 22, "end": 49 },
+    { "title": "Acolhimento", "id": "acolhimento", "start": 50, "end": 99 },
+    { "title": "Ritual", "id": "ritual", "start": 100, "end": 149 },
+    { "title": "Renascimento", "id": "renascimento", "start": 150, "end": 202 }
+  ]
 }

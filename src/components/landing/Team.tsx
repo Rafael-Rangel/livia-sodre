@@ -15,14 +15,26 @@ export function Team() {
 
   useGSAP(
     () => {
-      gsap.from(".team-card", {
-        scrollTrigger: { trigger: root.current, start: "top 70%" },
-        y: 60,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: "power3.out",
-      });
+      const cards = root.current?.querySelectorAll(".team-card");
+      if (!cards?.length) return;
+
+      gsap.fromTo(
+        cards,
+        { y: 36, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.85,
+          stagger: 0.12,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+            once: true,
+          },
+        },
+      );
     },
     { scope: root },
   );
