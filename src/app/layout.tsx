@@ -57,7 +57,7 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/cinematic/frames/frame-210.webp"
+          href="/cinematic/frames/frame-001.webp"
           type="image/webp"
         />
       </head>

@@ -9,9 +9,10 @@
   "quality": "max",
   "scrollPinVh": 680,
   "formats": ["webp"],
-  "poster": "/cinematic/frames/frame-210.webp",
+  "poster": "/cinematic/frames/frame-000.webp",
   "mode": "scroll-film",
   "playback": "none",
+  "videos": ["hero-master.mp4", "sora-hero-8s.mp4"],
   "excluded": ["sora-hero-4s.mp4", "sora-pro-8s.mp4"],
   "chapters": [
     { "id": "01-fachada", "title": "Fachada", "start": 0, "end": 59 },

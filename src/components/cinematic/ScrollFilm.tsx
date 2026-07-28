@@ -337,7 +337,7 @@ export function ScrollFilm() {
       {!ready && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={manifest?.poster || "/cinematic/frames/frame-040.webp"}
+          src={manifest?.poster || "/cinematic/frames/frame-000.webp"}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"
