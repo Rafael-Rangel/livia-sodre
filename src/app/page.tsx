@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/landing/Navbar";
-import { Hero } from "@/components/landing/Hero";
+import { ScrollCanvasHero } from "@/components/cinematic/ScrollCanvasHero";
 import { Services } from "@/components/landing/Services";
 import { Team } from "@/components/landing/Team";
 import { About } from "@/components/landing/About";
@@ -11,7 +11,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <main>
-        <Hero />
+        <ScrollCanvasHero />
         <Services />
         <Team />
         <About />

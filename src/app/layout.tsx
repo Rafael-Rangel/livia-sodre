@@ -4,6 +4,7 @@ import {
   Great_Vibes,
   Outfit,
 } from "next/font/google";
+import { SmoothScroll } from "@/components/cinematic/SmoothScroll";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -46,8 +47,22 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${display.variable} ${script.variable} ${body.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/cinematic/frames/frame-000.webp"
+          type="image/webp"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/cinematic/frames/frame-000.avif"
+          type="image/avif"
+        />
+      </head>
       <body className="min-h-full font-[family-name:var(--font-body)]">
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

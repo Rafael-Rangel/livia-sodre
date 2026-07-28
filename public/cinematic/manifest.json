@@ -1,0 +1,10 @@
+{
+  "total": 96,
+  "pad": 3,
+  "width": 1280,
+  "height": 720,
+  "formats": ["avif", "webp"],
+  "basePath": "/cinematic/frames",
+  "poster": "/cinematic/frames/frame-000.webp",
+  "scrollPinVh": 320
+}
