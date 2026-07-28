@@ -1,22 +1,22 @@
 ﻿{
   "width": 1280,
   "height": 720,
-  "total": 203,
-  "startFrame": 22,
+  "total": 245,
+  "startFrame": 6,
   "pad": 3,
   "basePath": "/cinematic/frames",
-  "source": "ritual-cuidar-4-chapters-sora2",
+  "source": "scroll-film-sora-2-pro-4ch",
   "quality": "high",
-  "scrollPinVh": 520,
+  "scrollPinVh": 560,
   "formats": ["webp"],
   "poster": "/cinematic/frames/frame-040.webp",
   "mode": "scroll-film",
   "playback": "none",
   "chapters": [
-    { "title": "Limiar", "id": "limiar", "start": 22, "end": 49 },
-    { "title": "Acolhimento", "id": "acolhimento", "start": 50, "end": 99 },
-    { "title": "Ritual", "id": "ritual", "start": 100, "end": 149 },
-    { "title": "Renascimento", "id": "renascimento", "start": 150, "end": 202 }
+    { "id": "01-fachada", "title": "Fachada", "start": 0, "end": 60 },
+    { "id": "02-entrada", "title": "Entrada", "start": 61, "end": 121 },
+    { "id": "03-recepcao", "title": "Recepção", "start": 122, "end": 182 },
+    { "id": "04-acolhimento", "title": "Acolhimento", "start": 183, "end": 244 }
   ],
-  "note": "Frames only — never play MP4 on the page. See docs/ROTEIRO-SCROLL-FILM.md"
+  "note": "4 Sora-2-Pro chapters @15fps WebP q96. Remaining chapters blocked by OpenAI billing hard limit."
 }
