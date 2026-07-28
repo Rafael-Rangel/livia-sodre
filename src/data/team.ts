@@ -13,7 +13,7 @@ export const team: Professional[] = [
     id: "yame",
     name: "Yamê",
     role: "Esteticista · Pós-graduada em Acupuntura",
-    image: "/team/yame.jpg",
+    image: "/team/yame.webp",
     specialties: ["Acupuntura", "Ventosaterapia", "Estética avançada"],
     bio: [
       "Especialista em tratamentos que unem saúde, equilíbrio e bem-estar.",
@@ -24,7 +24,7 @@ export const team: Professional[] = [
     id: "ariany",
     name: "Ariany",
     role: "Nail Designer",
-    image: "/team/ariany.jpg",
+    image: "/team/ariany.webp",
     specialties: ["Nail design", "Alongamento", "Arte nas unhas"],
     bio: [
       "Transforma ideias em unhas incríveis, unindo técnica, criatividade e atenção a cada detalhe.",
@@ -35,7 +35,7 @@ export const team: Professional[] = [
     id: "luana",
     name: "Luana",
     role: "Manicure",
-    image: "/team/luana.jpg",
+    image: "/team/luana.webp",
     specialties: ["Manicure", "Cuidado das mãos", "Esmaltação"],
     bio: [
       "Especialista em beleza e cuidado das mãos. Com técnica apurada e delicadeza, transforma unhas em símbolos de autoestima.",

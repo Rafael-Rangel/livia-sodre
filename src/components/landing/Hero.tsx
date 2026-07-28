@@ -63,7 +63,7 @@ export function Hero() {
           <div className="arch-frame relative aspect-[3/4] bg-[var(--nude-deep)] shadow-[var(--shadow)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/team/yame.jpg"
+              src="/team/yame.webp"
               alt="Equipe Lívia Sodré"
               className="h-full w-full object-cover object-[center_20%]"
             />
