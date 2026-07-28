@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -57,12 +58,14 @@ export function Team() {
         <div className="grid gap-8 md:grid-cols-3">
           {members.map((m) => (
             <article key={m.id} className="team-card group">
-              <div className="arch-frame relative aspect-[3/4] bg-[var(--nude-deep)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="arch-frame relative aspect-[3/4] overflow-hidden bg-[var(--nude-deep)]">
+                <Image
                   src={m.image}
                   alt={m.name}
-                  className="h-full w-full object-cover object-[center_15%] transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 768px) 90vw, 30vw"
+                  quality={95}
+                  className="object-cover object-[center_18%] transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(44,31,26,0.55)] via-transparent to-transparent" />
               </div>
