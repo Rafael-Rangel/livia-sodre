@@ -1,22 +1,22 @@
 ﻿{
-  "width": 1280,
-  "height": 720,
-  "total": 245,
-  "startFrame": 6,
+  "width": 1600,
+  "height": 900,
+  "total": 240,
+  "startFrame": 4,
   "pad": 3,
   "basePath": "/cinematic/frames",
   "source": "scroll-film-sora-2-pro-4ch",
-  "quality": "high",
+  "quality": "max",
   "scrollPinVh": 560,
   "formats": ["webp"],
-  "poster": "/cinematic/frames/frame-040.webp",
+  "poster": "/cinematic/frames/frame-030.webp",
   "mode": "scroll-film",
   "playback": "none",
   "chapters": [
-    { "id": "01-fachada", "title": "Fachada", "start": 0, "end": 60 },
-    { "id": "02-entrada", "title": "Entrada", "start": 61, "end": 121 },
-    { "id": "03-recepcao", "title": "Recepção", "start": 122, "end": 182 },
-    { "id": "04-acolhimento", "title": "Acolhimento", "start": 183, "end": 244 }
+    { "id": "01-fachada", "title": "Fachada", "start": 0, "end": 59 },
+    { "id": "02-entrada", "title": "Entrada", "start": 60, "end": 119 },
+    { "id": "03-recepcao", "title": "Recepção", "start": 120, "end": 179 },
+    { "id": "04-acolhimento", "title": "Acolhimento", "start": 180, "end": 239 }
   ],
-  "note": "4 Sora-2-Pro chapters @15fps WebP q96. Remaining chapters blocked by OpenAI billing hard limit."
+  "note": "Re-extracted from original Pro chapter MP4s at 1600x900 WebP q100 (~186KB/frame)"
 }
