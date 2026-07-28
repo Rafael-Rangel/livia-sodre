@@ -8,8 +8,15 @@ export type WorkerRequest =
       basePath: string;
       pad: number;
       preferAvif: boolean;
+      concurrency?: number;
     }
-  | { type: "WARM"; indices: number[]; basePath: string; pad: number; preferAvif: boolean };
+  | {
+      type: "WARM";
+      indices: number[];
+      basePath: string;
+      pad: number;
+      preferAvif: boolean;
+    };
 
 export type WorkerResponse =
   | {
@@ -32,12 +39,10 @@ function frameUrl(
   basePath: string,
   index: number,
   pad: number,
-  preferAvif: boolean,
   useAvif: boolean,
 ) {
   const n = String(index).padStart(pad, "0");
-  const ext = preferAvif && useAvif ? "avif" : "webp";
-  return `${basePath}/frame-${n}.${ext}`;
+  return `${basePath}/frame-${n}.${useAvif ? "avif" : "webp"}`;
 }
 
 async function loadBitmap(
@@ -46,23 +51,21 @@ async function loadBitmap(
   pad: number,
   preferAvif: boolean,
 ): Promise<ImageBitmap> {
-  const tryAvif = preferAvif;
-  const url = frameUrl(basePath, index, pad, preferAvif, tryAvif);
+  const primary = frameUrl(basePath, index, pad, preferAvif);
   try {
-    const res = await fetch(url, { cache: "force-cache" });
+    const res = await fetch(primary, { cache: "force-cache" });
     if (!res.ok) throw new Error(String(res.status));
-    const blob = await res.blob();
-    return await createImageBitmap(blob);
+    return await createImageBitmap(await res.blob());
   } catch {
-    const fallback = frameUrl(basePath, index, pad, false, false);
+    const fallback = frameUrl(basePath, index, pad, false);
     const res = await fetch(fallback, { cache: "force-cache" });
     if (!res.ok) throw new Error(`frame ${index} ${res.status}`);
-    const blob = await res.blob();
-    return await createImageBitmap(blob);
+    return await createImageBitmap(await res.blob());
   }
 }
 
 const inflight = new Set<number>();
+const done = new Set<number>();
 
 async function emitFrame(
   index: number,
@@ -70,10 +73,11 @@ async function emitFrame(
   pad: number,
   preferAvif: boolean,
 ) {
-  if (inflight.has(index)) return;
+  if (done.has(index) || inflight.has(index)) return;
   inflight.add(index);
   try {
     const bitmap = await loadBitmap(basePath, index, pad, preferAvif);
+    done.add(index);
     const msg: WorkerResponse = { type: "FRAME", index, bitmap };
     self.postMessage(msg, [bitmap]);
   } catch (e) {
@@ -88,22 +92,46 @@ async function emitFrame(
   }
 }
 
+async function mapPool(
+  indices: number[],
+  concurrency: number,
+  fn: (i: number) => Promise<void>,
+) {
+  let cursor = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, indices.length) },
+    async () => {
+      while (cursor < indices.length) {
+        const i = cursor++;
+        await fn(indices[i]);
+      }
+    },
+  );
+  await Promise.all(workers);
+}
+
 self.onmessage = async (ev: MessageEvent<WorkerRequest>) => {
   const data = ev.data;
+
   if (data.type === "WARM") {
-    await Promise.all(
-      data.indices.map((i) =>
-        emitFrame(i, data.basePath, data.pad, data.preferAvif),
-      ),
+    await mapPool(data.indices, 6, (i) =>
+      emitFrame(i, data.basePath, data.pad, data.preferAvif),
     );
     return;
   }
 
   if (data.type === "LOAD_RANGE") {
     const { start, end, basePath, pad, preferAvif } = data;
-    for (let i = start; i <= end; i++) {
-      await emitFrame(i, basePath, pad, preferAvif);
-    }
-    self.postMessage({ type: "RANGE_DONE", start, end } satisfies WorkerResponse);
+    const concurrency = data.concurrency ?? 6;
+    const indices: number[] = [];
+    for (let i = start; i <= end; i++) indices.push(i);
+    await mapPool(indices, concurrency, (i) =>
+      emitFrame(i, basePath, pad, preferAvif),
+    );
+    self.postMessage({
+      type: "RANGE_DONE",
+      start,
+      end,
+    } satisfies WorkerResponse);
   }
 };

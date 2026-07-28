@@ -23,10 +23,14 @@ type Manifest = {
   scrollPinVh: number;
 };
 
-const BATCH = 10;
-const PRELOAD = 10;
+const BATCH = 16;
+const PRELOAD = 24;
 
 function supportsAvif() {
+  // Prefer WebP on mobile/slow for faster decode; AVIF on desktop when supported.
+  if (typeof window === "undefined") return false;
+  const mobile = window.matchMedia("(max-width: 768px)").matches;
+  if (mobile) return false;
   try {
     const c = document.createElement("canvas");
     return c.toDataURL("image/avif").startsWith("data:image/avif");
@@ -35,14 +39,31 @@ function supportsAvif() {
   }
 }
 
+function nearestLoaded(
+  frames: Array<ImageBitmap | null>,
+  target: number,
+): number {
+  if (frames[target]) return target;
+  for (let d = 1; d < frames.length; d++) {
+    const prev = target - d;
+    const next = target + d;
+    if (prev >= 0 && frames[prev]) return prev;
+    if (next < frames.length && frames[next]) return next;
+  }
+  return -1;
+}
+
 export function ScrollCanvasHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const frameIndex = useRef(0);
+  const targetFrame = useRef(0);
+  const drawFrame = useRef(0);
   const frames = useRef<(ImageBitmap | null)[]>([]);
   const rafDraw = useRef(0);
+  const workerRef = useRef<Worker | null>(null);
   const [ready, setReady] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [reduced, setReduced] = useState(false);
   const [manifest, setManifest] = useState<Manifest | null>(null);
 
@@ -59,24 +80,34 @@ export function ScrollCanvasHero() {
 
     const preferAvif = supportsAvif() && manifest.formats.includes("avif");
     frames.current = Array.from({ length: manifest.total }, () => null);
+    let loadedCount = 0;
 
     const worker = new Worker(
       new URL("../../workers/frame-loader.worker.ts", import.meta.url),
     );
+    workerRef.current = worker;
 
     const draw = () => {
       const canvas = canvasRef.current;
-      const bmp = frames.current[frameIndex.current];
-      if (!canvas || !bmp) return;
+      if (!canvas) return;
+
+      const ideal = Math.round(drawFrame.current);
+      const idx = nearestLoaded(frames.current, ideal);
+      if (idx < 0) return;
+      const bmp = frames.current[idx];
+      if (!bmp) return;
+
       const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
       if (!ctx) return;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
-      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
-        canvas.width = Math.floor(w * dpr);
-        canvas.height = Math.floor(h * dpr);
+      const tw = Math.floor(w * dpr);
+      const th = Math.floor(h * dpr);
+      if (canvas.width !== tw || canvas.height !== th) {
+        canvas.width = tw;
+        canvas.height = th;
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = true;
@@ -85,16 +116,32 @@ export function ScrollCanvasHero() {
       const scale = Math.max(w / bmp.width, h / bmp.height);
       const dw = bmp.width * scale;
       const dh = bmp.height * scale;
-      const dx = (w - dw) / 2;
-      const dy = (h - dh) / 2;
       ctx.fillStyle = "#ede4d6";
       ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(bmp, dx, dy, dw, dh);
+      ctx.drawImage(bmp, (w - dw) / 2, (h - dh) / 2, dw, dh);
     };
 
     const scheduleDraw = () => {
       cancelAnimationFrame(rafDraw.current);
       rafDraw.current = requestAnimationFrame(draw);
+    };
+
+    const warmAround = (center: number) => {
+      const indices: number[] = [];
+      for (let d = 0; d <= 10; d++) {
+        const a = center + d;
+        const b = center - d;
+        if (a < manifest.total && !frames.current[a]) indices.push(a);
+        if (d > 0 && b >= 0 && !frames.current[b]) indices.push(b);
+      }
+      if (!indices.length) return;
+      worker.postMessage({
+        type: "WARM",
+        indices: indices.slice(0, 16),
+        basePath: manifest.basePath,
+        pad: manifest.pad,
+        preferAvif,
+      } satisfies WorkerRequest);
     };
 
     worker.onmessage = (ev: MessageEvent<WorkerResponse>) => {
@@ -103,27 +150,29 @@ export function ScrollCanvasHero() {
         const prev = frames.current[msg.index];
         if (prev) prev.close();
         frames.current[msg.index] = msg.bitmap;
-        if (msg.index === frameIndex.current) scheduleDraw();
-        if (msg.index === 0) setReady(true);
+        loadedCount += 1;
+        setProgress(Math.round((loadedCount / manifest.total) * 100));
+        if (msg.index === 0 || loadedCount === 1) setReady(true);
+        const ideal = Math.round(drawFrame.current);
+        if (Math.abs(msg.index - ideal) <= 2) scheduleDraw();
       }
     };
 
-    const warmFirst = Array.from(
-      { length: Math.min(PRELOAD, manifest.total) },
-      (_, i) => i,
-    );
+    // Priority first frames for instant scrub start
     worker.postMessage({
       type: "WARM",
-      indices: warmFirst,
+      indices: Array.from({ length: Math.min(PRELOAD, manifest.total) }, (_, i) => i),
       basePath: manifest.basePath,
       pad: manifest.pad,
       preferAvif,
     } satisfies WorkerRequest);
 
+    // Then stream the rest in parallel batches
     let loadedBatch = 0;
+    const totalBatches = Math.ceil(manifest.total / BATCH);
     const loadNextBatch = () => {
+      if (loadedBatch >= totalBatches) return;
       const start = loadedBatch * BATCH;
-      if (start >= manifest.total) return;
       const end = Math.min(manifest.total - 1, start + BATCH - 1);
       worker.postMessage({
         type: "LOAD_RANGE",
@@ -132,53 +181,58 @@ export function ScrollCanvasHero() {
         basePath: manifest.basePath,
         pad: manifest.pad,
         preferAvif,
+        concurrency: 8,
       } satisfies WorkerRequest);
       loadedBatch += 1;
     };
 
+    // Kick several batches immediately for fluidity
+    loadNextBatch();
+    loadNextBatch();
     loadNextBatch();
     const batchTimer = window.setInterval(() => {
-      if (loadedBatch * BATCH >= manifest.total) {
+      if (loadedBatch >= totalBatches) {
         window.clearInterval(batchTimer);
         return;
       }
       loadNextBatch();
-    }, 180);
+    }, 90);
 
     const onResize = () => scheduleDraw();
     window.addEventListener("resize", onResize);
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) loadNextBatch();
-      },
-      { rootMargin: "200px" },
-    );
-    if (sectionRef.current) io.observe(sectionRef.current);
-
-    (sectionRef.current as HTMLElement & { __setFrame?: (i: number) => void }).__setFrame = (
-      i: number,
-    ) => {
-      frameIndex.current = i;
-      scheduleDraw();
-      const ahead = Math.min(manifest.total - 1, i + 6);
-      if (!frames.current[ahead]) {
-        worker.postMessage({
-          type: "WARM",
-          indices: [ahead],
-          basePath: manifest.basePath,
-          pad: manifest.pad,
-          preferAvif,
-        } satisfies WorkerRequest);
+    // Smooth display frame toward scroll target (prevents stutter)
+    let ticking = true;
+    const smoothLoop = () => {
+      if (!ticking) return;
+      const diff = targetFrame.current - drawFrame.current;
+      if (Math.abs(diff) > 0.01) {
+        drawFrame.current += diff * 0.28;
+        scheduleDraw();
+      } else if (drawFrame.current !== targetFrame.current) {
+        drawFrame.current = targetFrame.current;
+        scheduleDraw();
       }
+      requestAnimationFrame(smoothLoop);
+    };
+    requestAnimationFrame(smoothLoop);
+
+    (
+      sectionRef.current as HTMLElement & {
+        __setFrame?: (i: number) => void;
+      }
+    ).__setFrame = (i: number) => {
+      targetFrame.current = i;
+      warmAround(i);
     };
 
     return () => {
+      ticking = false;
       window.clearInterval(batchTimer);
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(rafDraw.current);
-      io.disconnect();
       worker.terminate();
+      workerRef.current = null;
       frames.current.forEach((b) => b?.close());
     };
   }, [manifest, reduced]);
@@ -204,22 +258,28 @@ export function ScrollCanvasHero() {
         splits.push(new SplitType(el as HTMLElement, { types: "words,chars" }));
       });
 
-      gsap.set(".cine-char, .cine-word, .char, .word", { opacity: 0, y: 28 });
+      gsap.set(".char, .word", { opacity: 0, y: 24 });
       gsap.set([script, quote, title, sub, ctas], { opacity: 0 });
+
+      const pinEnd =
+        typeof window !== "undefined" && window.innerWidth < 768
+          ? Math.max(220, Math.round(manifest.scrollPinVh * 0.72))
+          : manifest.scrollPinVh;
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: `+=${manifest.scrollPinVh}%`,
+          end: `+=${pinEnd}%`,
           pin: true,
-          scrub: 0.55,
+          scrub: 0.35,
           anticipatePin: 1,
+          fastScrollEnd: true,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const idx = Math.min(
               manifest.total - 1,
-              Math.floor(self.progress * (manifest.total - 1)),
+              Math.max(0, Math.round(self.progress * (manifest.total - 1))),
             );
             (
               section as HTMLElement & { __setFrame?: (i: number) => void }
@@ -228,36 +288,36 @@ export function ScrollCanvasHero() {
         },
       });
 
-      tl.to({}, { duration: 0.08 })
+      tl.to({}, { duration: 0.06 })
         .to(
           eyebrow?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.015, duration: 0.12, ease: "power2.out" },
-          0.08,
+          { opacity: 1, y: 0, stagger: 0.012, duration: 0.1, ease: "power2.out" },
+          0.06,
         )
-        .to(script, { opacity: 1, duration: 0.01 }, 0.28)
+        .to(script, { opacity: 1, duration: 0.01 }, 0.25)
         .to(
           script?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.02, duration: 0.14, ease: "power2.out" },
-          0.28,
+          { opacity: 1, y: 0, stagger: 0.016, duration: 0.12, ease: "power2.out" },
+          0.25,
         )
-        .to(quote, { opacity: 1, duration: 0.01 }, 0.5)
+        .to(quote, { opacity: 1, duration: 0.01 }, 0.48)
         .to(
           quote?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.012, duration: 0.12 },
-          0.5,
+          { opacity: 1, y: 0, stagger: 0.01, duration: 0.1 },
+          0.48,
         )
-        .to([title, sub], { opacity: 1, duration: 0.01 }, 0.78)
+        .to([title, sub], { opacity: 1, duration: 0.01 }, 0.76)
         .to(
           title?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.018, duration: 0.16, ease: "power3.out" },
-          0.78,
+          { opacity: 1, y: 0, stagger: 0.014, duration: 0.14, ease: "power3.out" },
+          0.76,
         )
         .to(
           sub?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.01, duration: 0.12 },
-          0.86,
+          { opacity: 1, y: 0, stagger: 0.008, duration: 0.1 },
+          0.84,
         )
-        .to(ctas, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, 0.92);
+        .to(ctas, { opacity: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.9);
 
       const pulse = animate(".cine-scroll-hint", {
         opacity: [0.35, 0.9, 0.35],
@@ -266,6 +326,8 @@ export function ScrollCanvasHero() {
         duration: 2200,
         loop: true,
       });
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
 
       return () => {
         pulse.pause();
@@ -280,7 +342,7 @@ export function ScrollCanvasHero() {
       <section className="texture relative flex min-h-[100svh] items-end px-5 pb-16 pt-28 md:px-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/cinematic/frames/frame-000.webp"
+          src="/cinematic/frames/frame-060.webp"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -311,7 +373,7 @@ export function ScrollCanvasHero() {
     >
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 h-full w-full"
+        className="absolute inset-0 h-full w-full will-change-transform"
         aria-hidden
       />
       {!ready && (
@@ -326,6 +388,14 @@ export function ScrollCanvasHero() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(250,246,240,0.78)] via-[rgba(250,246,240,0.22)] to-transparent md:via-[rgba(250,246,240,0.12)]" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgba(31,22,18,0.42)] via-transparent to-[rgba(250,246,240,0.15)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[rgba(250,246,240,0.45)] to-transparent" />
+
+      {progress < 100 && (
+        <div className="pointer-events-none absolute right-5 top-24 z-20 md:right-8">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--muted)]">
+            {progress}%
+          </p>
+        </div>
+      )}
 
       <div
         ref={overlayRef}
