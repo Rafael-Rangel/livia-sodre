@@ -9,12 +9,16 @@ export type StoryBeat = {
   showCta?: boolean;
 };
 
-/** Beats for hero-master (0–67%) + sora-hero-8s extension (67–100%). */
+/**
+ * Beats aligned to full-video frames:
+ * hero-master 0–244 (fachada→entrada→recepção→acolhimento com as duas)
+ * sora-hero-8s 245–364 (atmosfera)
+ */
 export const storyBeats: StoryBeat[] = [
   {
     id: "limiar",
     from: 0,
-    to: 0.12,
+    to: 0.16,
     eyebrow: "O Ritual do Cuidar",
     script: "cuidado",
     title: "Lívia Sodré",
@@ -22,23 +26,23 @@ export const storyBeats: StoryBeat[] = [
   },
   {
     id: "entrada",
-    from: 0.12,
-    to: 0.28,
+    from: 0.16,
+    to: 0.33,
     eyebrow: "Entrada",
     title: "Cruze o limiar",
     body: "A câmera te acompanha pela porta. O espaço respira com você.",
   },
   {
     id: "recepcao",
-    from: 0.28,
-    to: 0.48,
+    from: 0.33,
+    to: 0.49,
     eyebrow: "Recepção",
     title: "Seu atendimento começa aqui",
     body: "Luz quente, flores e acolhimento — do primeiro olhar ao cuidado.",
   },
   {
     id: "acolhimento",
-    from: 0.48,
+    from: 0.49,
     to: 0.67,
     eyebrow: "Acolhimento",
     title: "Você é vista de verdade",

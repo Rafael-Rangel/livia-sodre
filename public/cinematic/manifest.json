@@ -2,20 +2,23 @@
   "width": 1600,
   "height": 900,
   "total": 365,
-  "startFrame": 4,
+  "startFrame": 0,
   "pad": 3,
   "basePath": "/cinematic/frames",
   "source": "hero-master+sora-hero-8s",
   "quality": "max",
-  "scrollPinVh": 640,
+  "scrollPinVh": 680,
   "formats": ["webp"],
-  "poster": "/cinematic/frames/frame-040.webp",
+  "poster": "/cinematic/frames/frame-210.webp",
   "mode": "scroll-film",
   "playback": "none",
   "excluded": ["sora-hero-4s.mp4", "sora-pro-8s.mp4"],
   "chapters": [
-    { "id": "hero-master", "title": "Jornada principal", "start": 0, "end": 244 },
-    { "id": "sora-hero-8s", "title": "Extensão atmosférica", "start": 245, "end": 364 }
+    { "id": "01-fachada", "title": "Fachada", "start": 0, "end": 59 },
+    { "id": "02-entrada", "title": "Entrada", "start": 60, "end": 119 },
+    { "id": "03-recepcao", "title": "Recepção", "start": 120, "end": 179 },
+    { "id": "04-acolhimento", "title": "Acolhimento", "start": 180, "end": 244 },
+    { "id": "05-atmosfera", "title": "Atmosfera", "start": 245, "end": 364 }
   ],
-  "note": "Frames from hero-master.mp4 + sora-hero-8s.mp4 only (excluded 4s and sora-pro-8s). 1600x900 WebP q100."
+  "note": "Full videos: hero-master.mp4 (entire) + sora-hero-8s.mp4 (entire). Excluded sora-hero-4s and sora-pro-8s. All frames 0–364 used."
 }
