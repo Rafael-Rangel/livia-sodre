@@ -3,7 +3,15 @@
 import { motion } from "framer-motion";
 import { formatPrice } from "@/data/services";
 import { IconBubble } from "@/components/ui/IconBubble";
-import { CreditCard } from "@/lib/icons";
+import {
+  Banknote,
+  BarChart3,
+  CreditCard,
+  PieChart,
+  TrendingUp,
+  Wallet,
+  type LucideIcon,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 export type PaymentMethodStat = {
@@ -19,6 +27,13 @@ export const paymentMethodMock: PaymentMethodStat[] = [
   { method: "Dinheiro", total: 2180, count: 14, color: "#b8956a" },
   { method: "Transferência", total: 1750, count: 8, color: "#8b5cf6" },
 ];
+
+const methodIcons: Record<string, LucideIcon> = {
+  PIX: Wallet,
+  Cartão: CreditCard,
+  Dinheiro: Banknote,
+  Transferência: Banknote,
+};
 
 const weeklyByMethod = [
   { label: "Sem 1", PIX: 1800, Cartão: 1400, Dinheiro: 420, Transferência: 300 },
@@ -209,7 +224,7 @@ export function PaymentMethodCharts({
     <div className={cn("grid gap-4 md:grid-cols-2", className)}>
       <div className="dash-card p-5">
         <div className="mb-4 flex items-center gap-3">
-          <IconBubble icon={CreditCard} tone="soft" size={16} />
+          <IconBubble icon={PieChart} tone="soft" size={16} />
           <div>
             <h3 className="display text-xl text-[var(--chocolate)]">
               Distribuição
@@ -224,7 +239,7 @@ export function PaymentMethodCharts({
 
       <div className="dash-card p-5">
         <div className="mb-4 flex items-center gap-3">
-          <IconBubble icon={CreditCard} tone="soft" size={16} />
+          <IconBubble icon={BarChart3} tone="soft" size={16} />
           <div>
             <h3 className="display text-xl text-[var(--chocolate)]">
               Receita por método
@@ -237,7 +252,7 @@ export function PaymentMethodCharts({
 
       <div className="dash-card p-5 md:col-span-2">
         <div className="mb-4 flex items-center gap-3">
-          <IconBubble icon={CreditCard} tone="soft" size={16} />
+          <IconBubble icon={TrendingUp} tone="soft" size={16} />
           <div>
             <h3 className="display text-xl text-[var(--chocolate)]">
               Evolução semanal por método
@@ -249,13 +264,16 @@ export function PaymentMethodCharts({
         </div>
         <WeeklyStacked data={series} />
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {series.map((d) => (
+          {series.map((d) => {
+            const Icon = methodIcons[d.method] ?? CreditCard;
+            return (
             <div
               key={d.method}
               className="rounded-xl border border-white/45 bg-white/40 px-3 py-3"
               style={{ borderLeft: `3px solid ${d.color}` }}
             >
-              <p className="text-[10px] uppercase tracking-wide text-[var(--muted)]">
+              <p className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--muted)]">
+                <Icon size={12} strokeWidth={1.8} style={{ color: d.color }} />
                 {d.method}
               </p>
               <p className="display mt-1 text-lg text-[var(--chocolate)]">
@@ -263,7 +281,8 @@ export function PaymentMethodCharts({
               </p>
               <p className="text-xs text-[var(--muted)]">{d.count} transações</p>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

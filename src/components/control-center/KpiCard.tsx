@@ -74,12 +74,14 @@ export function KpiCard({
 
 export function WidgetShell({
   title,
+  icon: Icon,
   children,
   className,
   actions,
   delay = 0,
 }: {
   title: string;
+  icon?: LucideIcon;
   children: React.ReactNode;
   className?: string;
   actions?: React.ReactNode;
@@ -94,7 +96,14 @@ export function WidgetShell({
       className={cn("cc-card p-4 md:p-5", className)}
     >
       <div className="mb-4 flex items-center justify-between gap-2">
-        <h3 className="display text-xl text-[var(--chocolate)]">{title}</h3>
+        <h3 className="display flex items-center gap-2.5 text-xl text-[var(--chocolate)]">
+          {Icon && (
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(184,149,106,0.16)] text-[var(--gold-dim)]">
+              <Icon size={16} strokeWidth={1.7} />
+            </span>
+          )}
+          {title}
+        </h3>
         {actions}
       </div>
       {children}

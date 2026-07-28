@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="ls-bg" x1="12" y1="4" x2="52" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3d2c24"/>
+      <stop offset="0.55" stop-color="#2c1f1a"/>
+      <stop offset="1" stop-color="#1f1612"/>
+    </linearGradient>
+    <linearGradient id="ls-gold" x1="18" y1="16" x2="46" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e8d4b8"/>
+      <stop offset="0.5" stop-color="#d4b896"/>
+      <stop offset="1" stop-color="#b8956a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="url(#ls-bg)"/>
+  <circle
+    cx="32"
+    cy="32"
+    r="29.25"
+    stroke="url(#ls-gold)"
+    stroke-opacity="0.45"
+    stroke-width="1.5"
+  />
+  <path
+    d="M32 14.5L33.35 18.15L37.2 18.4L34.2 20.95L35.1 24.7L32 22.55L28.9 24.7L29.8 20.95L26.8 18.4L30.65 18.15L32 14.5Z"
+    fill="url(#ls-gold)"
+    fill-opacity="0.9"
+  />
+  <text
+    x="32"
+    y="44"
+    text-anchor="middle"
+    fill="url(#ls-gold)"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="18"
+    font-weight="600"
+    letter-spacing="1.5"
+  >LS</text>
+</svg>

@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   Bar,
   BarChart,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -29,27 +30,45 @@ import {
 import { format, parseISO } from "date-fns";
 import {
   Activity,
+  AlertTriangle,
   Banknote,
   Bell,
+  Brain,
   CalendarCheck,
   CalendarClock,
+  CalendarDays,
+  Camera,
   CheckCircle2,
   Clock,
+  CreditCard,
+  Gift,
+  Globe,
   GripVertical,
+  LayoutDashboard,
   LayoutGrid,
+  MessageCircle,
   Moon,
+  PieChart,
   Pin,
   RefreshCw,
+  Settings2,
   Sparkles,
+  Star,
   Sun,
+  Target,
   TrendingUp,
+  UserPlus,
+  Users,
+  UserRound,
   Wallet,
   XCircle,
+  type LucideIcon,
 } from "lucide-react";
-import { formatPrice } from "@/data/services";
+import { formatPrice, services, type ServiceCategory } from "@/data/services";
 import { categoryColors, normalizeStatus, statusMeta } from "@/lib/calendar/config";
+import { categoryIcons } from "@/lib/icons";
 import { formatTimeRange, nowInClinic } from "@/lib/calendar/time";
-import type { WidgetId } from "@/lib/control-center/types";
+import type { ControlTab, WidgetId } from "@/lib/control-center/types";
 import { CONTROL_TABS, useControlCenter } from "@/store/control-center-store";
 import { KpiCard, WidgetShell } from "./KpiCard";
 import { AnimatedNumber, Skeleton } from "./AnimatedNumber";
@@ -57,7 +76,7 @@ import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart"
 import { cn } from "@/lib/utils";
 import type { ControlCenterPayload } from "@/lib/control-center/metrics";
 
-const kpiIcons: Record<string, typeof Wallet> = {
+const kpiIcons: Record<string, LucideIcon> = {
   today: CalendarCheck,
   confirmed: CheckCircle2,
   pending: CalendarClock,
@@ -70,6 +89,51 @@ const kpiIcons: Record<string, typeof Wallet> = {
   commission: Banknote,
   messages: Bell,
   avg: Clock,
+};
+
+const tabIcons: Record<ControlTab, LucideIcon> = {
+  overview: LayoutDashboard,
+  agenda: CalendarDays,
+  team: Users,
+  finance: Wallet,
+  clients: UserRound,
+  procedures: Sparkles,
+  commercial: Target,
+  notifications: Bell,
+  insights: Brain,
+  settings: Settings2,
+};
+
+const widgetIcons: Record<WidgetId, LucideIcon> = {
+  kpis: LayoutGrid,
+  agenda_today: CalendarDays,
+  team_live: Users,
+  finance_charts: Wallet,
+  clients_pulse: UserRound,
+  procedures_rank: Sparkles,
+  commercial: Target,
+  notifications: Bell,
+  insights: Brain,
+  occupancy: PieChart,
+};
+
+const financeKpiIcons: Record<string, LucideIcon> = {
+  "Receita do dia": Wallet,
+  "Receita da semana": CalendarDays,
+  "Receita do mês": TrendingUp,
+  "Receita anual": Banknote,
+  "Contas a receber": CreditCard,
+  "Contas a pagar": AlertTriangle,
+  "Ticket médio": Target,
+  "Comissões (est.)": Star,
+};
+
+const segmentIcons: Record<string, LucideIcon> = {
+  novo: UserPlus,
+  frequente: Users,
+  vip: Star,
+  inativo: Clock,
+  aniversario: Gift,
 };
 
 function SortableWidget({
@@ -202,6 +266,7 @@ export function ControlCenter() {
       <nav className="cc-tabs mb-6 flex flex-wrap gap-1 overflow-x-hidden pb-1">
         {CONTROL_TABS.map((t, i) => {
           const active = tab === t.id;
+          const TabIcon = tabIcons[t.id];
           return (
             <motion.button
               key={t.id}
@@ -217,8 +282,9 @@ export function ControlCenter() {
                 }
                 setTab(t.id);
               }}
-              className={cn("cc-tab", active && "cc-tab-active")}
+              className={cn("cc-tab inline-flex items-center gap-1.5", active && "cc-tab-active")}
             >
+              <TabIcon size={13} strokeWidth={1.8} />
               {t.label}
             </motion.button>
           );
@@ -269,7 +335,7 @@ export function ControlCenter() {
                 />
               )}
               {tab === "agenda" && (
-                <WidgetShell title="Agenda completa">
+                <WidgetShell title="Agenda completa" icon={CalendarDays}>
                   <p className="text-sm text-[var(--muted)]">
                     Abrindo o módulo de agenda estilo Google Calendar…
                   </p>
@@ -314,6 +380,7 @@ function OverviewBoard({
               {w.id === "kpis" && (
                 <WidgetShell
                   title="KPIs da clínica"
+                  icon={widgetIcons.kpis}
                   delay={i * 0.04}
                   actions={
                     edit ? (
@@ -377,6 +444,7 @@ function AgendaWidget({
   return (
     <WidgetShell
       title="Agenda do dia"
+      icon={widgetIcons.agenda_today}
       delay={delay}
       actions={
         <Link href="/dashboard/agenda" className="cc-mini">
@@ -455,9 +523,16 @@ function InsightsMini({
   delay: number;
 }) {
   return (
-    <WidgetShell title="Insights IA" delay={delay}>
+    <WidgetShell title="Insights IA" icon={widgetIcons.insights} delay={delay}>
       <ul className="space-y-2">
-        {data.insights.slice(0, 4).map((ins) => (
+        {data.insights.slice(0, 4).map((ins) => {
+          const SevIcon =
+            ins.severity === "critical" || ins.severity === "warn"
+              ? AlertTriangle
+              : ins.severity === "success"
+                ? CheckCircle2
+                : Sparkles;
+          return (
           <li
             key={ins.id}
             className={cn(
@@ -468,12 +543,14 @@ function InsightsMini({
               ins.severity === "info" && "bg-white/60 text-[var(--brown)]",
             )}
           >
-            <span className="text-[9px] uppercase tracking-wide opacity-70">
+            <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wide opacity-70">
+              <SevIcon size={11} strokeWidth={2} />
               {ins.tag}
             </span>
             <p className="mt-1">{ins.text}</p>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </WidgetShell>
   );
@@ -494,7 +571,7 @@ function TeamMini({
     vacation: "Férias",
   };
   return (
-    <WidgetShell title="Equipe ao vivo" delay={delay}>
+    <WidgetShell title="Equipe ao vivo" icon={widgetIcons.team_live} delay={delay}>
       <div className="grid gap-3 sm:grid-cols-2">
         {data.teamLive.map((p) => (
           <motion.article
@@ -540,7 +617,7 @@ function OccupancyWidget({
   delay: number;
 }) {
   return (
-    <WidgetShell title="Ocupação" delay={delay}>
+    <WidgetShell title="Ocupação" icon={widgetIcons.occupancy} delay={delay}>
       <div className="flex items-end gap-3">
         <AnimatedNumber
           value={data.meta.occupancy}
@@ -570,18 +647,24 @@ function FinanceMini({
   }));
 
   return (
-    <WidgetShell title="Financeiro" delay={delay}>
+    <WidgetShell title="Financeiro" icon={widgetIcons.finance_charts} delay={delay}>
       <div className="mb-4 grid grid-cols-3 gap-2 text-center">
         {[
-          ["Dia", data.finance.day],
-          ["Mês", data.finance.month],
-          ["A receber", data.finance.receivable],
-        ].map(([l, v]) => (
+          ["Dia", data.finance.day, Wallet],
+          ["Mês", data.finance.month, TrendingUp],
+          ["A receber", data.finance.receivable, CreditCard],
+        ].map(([l, v, Icon]) => {
+          const I = Icon as LucideIcon;
+          return (
           <div key={String(l)} className="rounded-xl bg-white/50 p-2">
-            <p className="text-[9px] uppercase text-[var(--muted)]">{l}</p>
+            <p className="inline-flex items-center justify-center gap-1 text-[9px] uppercase text-[var(--muted)]">
+              <I size={11} strokeWidth={1.8} className="text-[var(--gold-dim)]" />
+              {l as string}
+            </p>
             <p className="mt-1 text-xs font-medium">{formatPrice(Number(v))}</p>
           </div>
-        ))}
+          );
+        })}
       </div>
       <MonthlyRevenueChart data={chartData} height={160} />
     </WidgetShell>
@@ -596,25 +679,37 @@ function ClientsMini({
   delay: number;
 }) {
   return (
-    <WidgetShell title="Clientes" delay={delay}>
+    <WidgetShell title="Clientes" icon={widgetIcons.clients_pulse} delay={delay}>
       <ul className="max-h-72 space-y-2 overflow-x-hidden overflow-y-auto">
-        {data.clients.map((c) => (
+        {data.clients.map((c) => {
+          const TagIcon = segmentIcons[c.tag] ?? UserRound;
+          return (
           <li
             key={c.id}
             className="flex items-center justify-between rounded-xl bg-white/45 px-3 py-2 text-sm"
           >
-            <div>
-              <p className="text-[var(--chocolate)]">{c.name}</p>
-              <p className="text-[10px] text-[var(--muted)]">{c.favorite}</p>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[rgba(184,149,106,0.14)] text-[var(--gold-dim)]">
+                <TagIcon size={14} strokeWidth={1.7} />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[var(--chocolate)]">{c.name}</p>
+                <p className="truncate text-[10px] text-[var(--muted)]">{c.favorite}</p>
+              </div>
             </div>
             <span className="rounded-full bg-[rgba(184,149,106,0.15)] px-2 py-0.5 text-[9px] uppercase text-[var(--gold-dim)]">
               {c.tag}
             </span>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </WidgetShell>
   );
+}
+
+function procedureCategory(name: string): ServiceCategory {
+  return services.find((s) => s.name === name)?.category ?? "facial";
 }
 
 function ProceduresMini({
@@ -624,29 +719,90 @@ function ProceduresMini({
   data: ControlCenterPayload;
   delay: number;
 }) {
+  const ranked = data.proceduresRank.slice(0, 4);
+  const chartData = ranked.map((p) => {
+    const cat = procedureCategory(p.name);
+    const palette = categoryColors[cat];
+    return {
+      ...p,
+      category: cat,
+      short: p.name.split(" ").slice(0, 2).join(" "),
+      fill: palette.solid,
+      soft: palette.bg,
+      text: palette.text,
+    };
+  });
+
   return (
-    <WidgetShell title="Procedimentos" delay={delay}>
+    <WidgetShell title="Procedimentos" icon={widgetIcons.procedures_rank} delay={delay}>
       <div className="h-48">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data.proceduresRank.slice(0, 5)}>
-            <XAxis dataKey="name" hide />
+          <BarChart data={chartData} barCategoryGap="18%">
+            <XAxis dataKey="short" hide />
             <YAxis hide />
-            <Tooltip />
-            <Bar dataKey="count" fill="#8b5cf6" radius={[6, 6, 0, 0]} animationDuration={800} />
+            <Tooltip
+              cursor={{ fill: "rgba(44,31,26,0.04)" }}
+              contentStyle={{
+                borderRadius: 12,
+                border: "1px solid rgba(184,149,106,0.35)",
+                background: "rgba(250,246,240,0.96)",
+                color: "#2c1f1a",
+                fontSize: 12,
+              }}
+              formatter={(value) => [String(value), "Atendimentos"]}
+              labelFormatter={(label) => String(label)}
+            />
+            <Bar dataKey="count" radius={[8, 8, 0, 0]} animationDuration={800}>
+              {chartData.map((entry) => (
+                <Cell key={entry.name} fill={entry.fill} />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <ul className="mt-2 space-y-1">
-        {data.proceduresRank.slice(0, 4).map((p) => (
-          <li key={p.name} className="flex justify-between text-xs">
-            <span className="truncate text-[var(--brown)]">{p.name}</span>
-            <span className="text-[var(--gold-dim)]">{p.count}</span>
+      <ul className="mt-4 space-y-3">
+        {chartData.map((p) => {
+          const Icon = categoryIcons[p.category];
+          return (
+          <li
+            key={p.name}
+            className="flex items-center justify-between gap-3 rounded-2xl border border-white/50 px-4 py-3.5"
+            style={{ background: p.soft }}
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: "rgba(255,255,255,0.55)", color: p.fill }}
+              >
+                <Icon size={16} strokeWidth={1.7} />
+              </span>
+              <span
+                className="truncate text-sm font-medium"
+                style={{ color: p.text }}
+              >
+                {p.name}
+              </span>
+            </div>
+            <span
+              className="display shrink-0 text-lg tabular-nums"
+              style={{ color: p.fill }}
+            >
+              {p.count}
+            </span>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </WidgetShell>
   );
 }
+
+const channelIcons: Record<string, LucideIcon> = {
+  Instagram: Camera,
+  WhatsApp: MessageCircle,
+  Indicação: UserPlus,
+  Google: Globe,
+};
 
 function CommercialMini({
   data,
@@ -657,35 +813,56 @@ function CommercialMini({
 }) {
   const c = data.commercial;
   return (
-    <WidgetShell title="CRM / Comercial" delay={delay}>
-      <div className="grid grid-cols-2 gap-2">
+    <WidgetShell title="CRM / Comercial" icon={widgetIcons.commercial} delay={delay}>
+      <div className="grid grid-cols-2 gap-3">
         {[
-          ["Leads", c.leads],
-          ["Conversão", `${c.conversion}%`],
-          ["No-show", c.noShow],
-          ["Recuperados", c.recovered],
-        ].map(([l, v]) => (
-          <div key={String(l)} className="rounded-xl bg-white/50 p-3">
-            <p className="text-[9px] uppercase text-[var(--muted)]">{l}</p>
-            <p className="display mt-1 text-xl">{v}</p>
+          ["Leads", c.leads, UserPlus],
+          ["Conversão", `${c.conversion}%`, Target],
+          ["No-show", c.noShow, AlertTriangle],
+          ["Recuperados", c.recovered, RefreshCw],
+        ].map(([l, v, Icon]) => {
+          const I = Icon as LucideIcon;
+          return (
+          <div key={String(l)} className="rounded-xl bg-white/50 px-3 py-4">
+            <p className="inline-flex items-center gap-1.5 text-[9px] uppercase text-[var(--muted)]">
+              <I size={12} strokeWidth={1.8} className="text-[var(--gold-dim)]" />
+              {l as string}
+            </p>
+            <p className="display mt-1.5 text-xl">{v as string | number}</p>
           </div>
-        ))}
+          );
+        })}
       </div>
-      <ul className="mt-3 space-y-1">
-        {c.channels.map((ch) => (
-          <li key={ch.name} className="text-xs">
-            <div className="mb-0.5 flex justify-between">
-              <span>{ch.name}</span>
-              <span>{ch.value}%</span>
-            </div>
-            <div className="h-1 rounded-full bg-black/5">
-              <div
-                className="h-full rounded-full bg-[var(--gold-dim)]"
-                style={{ width: `${ch.value}%` }}
-              />
-            </div>
-          </li>
-        ))}
+      <ul className="mt-5 space-y-3">
+        {c.channels.map((ch) => {
+          const Icon = channelIcons[ch.name] ?? Globe;
+          return (
+            <li
+              key={ch.name}
+              className="rounded-2xl border border-white/50 bg-white/55 px-4 py-4 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset]"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(184,149,106,0.16)] text-[var(--gold-dim)]">
+                    <Icon size={18} strokeWidth={1.7} />
+                  </span>
+                  <span className="truncate text-sm font-medium tracking-wide text-[var(--chocolate)]">
+                    {ch.name}
+                  </span>
+                </div>
+                <span className="display text-lg text-[var(--gold-dim)]">
+                  {ch.value}%
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-black/5">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[var(--gold-bright)] to-[var(--gold-dim)]"
+                  style={{ width: `${ch.value}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </WidgetShell>
   );
@@ -699,16 +876,25 @@ function NotifMini({
   delay: number;
 }) {
   return (
-    <WidgetShell title="Notificações" delay={delay}>
+    <WidgetShell title="Notificações" icon={widgetIcons.notifications} delay={delay}>
       <ul className="max-h-72 space-y-2 overflow-x-hidden overflow-y-auto">
-        {data.notifications.map((n) => (
+        {data.notifications.map((n) => {
+          const NIcon =
+            n.type === "payment"
+              ? Wallet
+              : n.type === "birthday"
+                ? Gift
+                : CalendarCheck;
+          return (
           <li key={n.id} className="rounded-xl border border-white/40 bg-white/40 px-3 py-2">
-            <p className="text-[10px] uppercase tracking-wide text-[var(--gold-dim)]">
+            <p className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--gold-dim)]">
+              <NIcon size={12} strokeWidth={1.8} />
               {n.title}
             </p>
-            <p className="text-sm text-[var(--chocolate)]">{n.message}</p>
+            <p className="mt-1 text-sm text-[var(--chocolate)]">{n.message}</p>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </WidgetShell>
   );
@@ -758,15 +944,21 @@ function TeamBoard({ data }: { data: ControlCenterPayload }) {
           </div>
           <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
             <div className="rounded-lg bg-white/45 p-2">
-              <p className="text-[var(--muted)]">Atend.</p>
+              <p className="inline-flex items-center justify-center gap-1 text-[var(--muted)]">
+                <CalendarCheck size={11} /> Atend.
+              </p>
               <p className="display text-lg">{p.doneToday}</p>
             </div>
             <div className="rounded-lg bg-white/45 p-2">
-              <p className="text-[var(--muted)]">Receita</p>
+              <p className="inline-flex items-center justify-center gap-1 text-[var(--muted)]">
+                <Wallet size={11} /> Receita
+              </p>
               <p className="display text-sm">{formatPrice(p.revenueToday)}</p>
             </div>
             <div className="rounded-lg bg-white/45 p-2">
-              <p className="text-[var(--muted)]">Comissão</p>
+              <p className="inline-flex items-center justify-center gap-1 text-[var(--muted)]">
+                <Banknote size={11} /> Comissão
+              </p>
               <p className="display text-sm">{formatPrice(p.commission)}</p>
             </div>
           </div>
@@ -787,14 +979,17 @@ function TeamBoard({ data }: { data: ControlCenterPayload }) {
             {p.specialties.map((s) => (
               <span
                 key={s}
-                className="rounded-full border border-white/50 px-2 py-0.5 text-[9px] uppercase text-[var(--muted)]"
+                className="inline-flex items-center gap-1 rounded-full border border-white/50 px-2 py-0.5 text-[9px] uppercase text-[var(--muted)]"
               >
+                <Sparkles size={9} strokeWidth={2} />
                 {s}
               </span>
             ))}
           </div>
-          <p className="mt-3 text-[10px] text-[var(--muted)]">
-            {p.hoursWorked}h · média {p.avgMin}min · ★ {p.rating.toFixed(1)}
+          <p className="mt-3 inline-flex items-center gap-1 text-[10px] text-[var(--muted)]">
+            <Clock size={11} /> {p.hoursWorked}h · média {p.avgMin}min ·
+            <Star size={11} className="text-[var(--gold-dim)]" fill="currentColor" />
+            {p.rating.toFixed(1)}
           </p>
         </motion.article>
       ))}
@@ -826,6 +1021,7 @@ function FinanceBoard({
             value={k.value}
             format="currency"
             hint={k.label}
+            icon={financeKpiIcons[k.label]}
             delay={i * 0.03}
           />
         ))}
@@ -833,11 +1029,16 @@ function FinanceBoard({
       <div className="md:col-span-2">
         <FinanceMini data={data} delay={0.1} />
       </div>
-      <WidgetShell title="Por profissional" delay={0.15}>
+      <WidgetShell title="Por profissional" icon={Users} delay={0.15}>
         <ul className="space-y-2">
           {data.finance.byPro.map((p) => (
-            <li key={p.name} className="flex justify-between text-sm">
-              <span>{p.name}</span>
+            <li key={p.name} className="flex items-center justify-between gap-2 text-sm">
+              <span className="inline-flex min-w-0 items-center gap-2 truncate">
+                <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[rgba(184,149,106,0.14)] text-[var(--gold-dim)]">
+                  <UserRound size={13} />
+                </span>
+                {p.name}
+              </span>
               <span className="text-[var(--gold-dim)]">{formatPrice(p.revenue)}</span>
             </li>
           ))}
@@ -857,13 +1058,21 @@ function ClientsBoard({
       <div className="md:col-span-2">
         <ClientsMini data={data} delay={0} />
       </div>
-      <WidgetShell title="Segmentos" delay={0.08}>
-        {["novo", "frequente", "vip", "inativo", "aniversario"].map((tag) => (
-          <p key={tag} className="mb-2 flex justify-between text-sm capitalize">
-            <span>{tag}</span>
+      <WidgetShell title="Segmentos" icon={PieChart} delay={0.08}>
+        {["novo", "frequente", "vip", "inativo", "aniversario"].map((tag) => {
+          const Icon = segmentIcons[tag] ?? UserRound;
+          return (
+          <p key={tag} className="mb-2 flex items-center justify-between gap-2 text-sm capitalize">
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[rgba(184,149,106,0.14)] text-[var(--gold-dim)]">
+                <Icon size={13} />
+              </span>
+              {tag}
+            </span>
             <span>{data.clients.filter((c) => c.tag === tag).length}</span>
           </p>
-        ))}
+          );
+        })}
       </WidgetShell>
     </div>
   );
@@ -877,14 +1086,56 @@ function ProceduresBoard({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <ProceduresMini data={data} delay={0} />
-      <WidgetShell title="Categorias" delay={0.08}>
-        <ul className="space-y-2">
-          {data.categoriesRank.map((c) => (
-            <li key={c.id} className="flex justify-between text-sm">
-              <span>{c.label}</span>
-              <span>{c.count}</span>
-            </li>
-          ))}
+      <WidgetShell title="Categorias" icon={LayoutGrid} delay={0.08}>
+        <ul className="overflow-hidden rounded-2xl border border-white/45 bg-white/40">
+          {data.categoriesRank.map((c, i) => {
+            const palette = categoryColors[c.id as ServiceCategory];
+            const Icon = categoryIcons[c.id as ServiceCategory];
+            const max = Math.max(...data.categoriesRank.map((x) => x.count), 1);
+            return (
+              <li key={c.id}>
+                {i > 0 && (
+                  <hr className="m-0 border-0 border-t border-[rgba(44,31,26,0.08)]" />
+                )}
+                <div className="flex items-center justify-between gap-3 px-4 py-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                      style={{
+                        background: palette?.bg ?? "rgba(184,149,106,0.16)",
+                        color: palette?.solid ?? "var(--gold-dim)",
+                      }}
+                    >
+                      {Icon ? <Icon size={18} strokeWidth={1.7} /> : null}
+                    </span>
+                    <div className="min-w-0">
+                      <p
+                        className="truncate text-sm font-medium"
+                        style={{ color: palette?.text ?? "var(--chocolate)" }}
+                      >
+                        {c.label}
+                      </p>
+                      <div className="mt-2 h-1.5 w-28 overflow-hidden rounded-full bg-black/5 sm:w-36">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${(c.count / max) * 100}%`,
+                            background: palette?.solid ?? "var(--gold)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    className="display shrink-0 text-2xl tabular-nums"
+                    style={{ color: palette?.solid ?? "var(--gold-dim)" }}
+                  >
+                    {c.count}
+                  </span>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </WidgetShell>
     </div>
@@ -914,7 +1165,14 @@ function InsightsBoard({
 }) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      {data.insights.map((ins, i) => (
+      {data.insights.map((ins, i) => {
+        const SevIcon =
+          ins.severity === "critical" || ins.severity === "warn"
+            ? AlertTriangle
+            : ins.severity === "success"
+              ? CheckCircle2
+              : Brain;
+        return (
         <motion.article
           key={ins.id}
           initial={{ opacity: 0, y: 12 }}
@@ -922,14 +1180,18 @@ function InsightsBoard({
           transition={{ delay: i * 0.05 }}
           className="cc-card p-4"
         >
-          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--gold-dim)]">
+          <p className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[var(--gold-dim)]">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[rgba(184,149,106,0.16)]">
+              <SevIcon size={13} strokeWidth={1.8} />
+            </span>
             {ins.tag} · {ins.severity}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-[var(--chocolate)]">
             {ins.text}
           </p>
         </motion.article>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -946,28 +1208,36 @@ function SettingsBoard({
   onReset: () => void;
 }) {
   return (
-    <WidgetShell title="Personalização do dashboard">
+    <WidgetShell title="Personalização do dashboard" icon={Settings2}>
       <p className="mb-4 text-sm text-[var(--muted)]">
         Layout salvo automaticamente neste navegador. Arraste widgets no modo
         Personalizar da visão Dashboard.
       </p>
       <ul className="space-y-2">
-        {widgets.map((w) => (
+        {widgets.map((w) => {
+          const Icon = widgetIcons[w.id];
+          return (
           <li
             key={w.id}
             className="flex items-center justify-between rounded-xl bg-white/45 px-3 py-2"
           >
-            <span className="text-sm">{w.label}</span>
+            <span className="inline-flex items-center gap-2 text-sm">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[rgba(184,149,106,0.14)] text-[var(--gold-dim)]">
+                <Icon size={13} />
+              </span>
+              {w.label}
+            </span>
             <div className="flex gap-2">
               <button type="button" className="cc-mini" onClick={() => onPin(w.id)}>
-                {w.pinned ? "Desafixar" : "Fixar"}
+                <Pin size={11} /> {w.pinned ? "Desafixar" : "Fixar"}
               </button>
               <button type="button" className="cc-mini" onClick={() => onToggle(w.id)}>
                 {w.visible ? "Ocultar" : "Mostrar"}
               </button>
             </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
       <button type="button" className="btn-ghost mt-4" onClick={onReset}>
         Restaurar layout padrão

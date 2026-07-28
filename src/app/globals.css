@@ -234,6 +234,21 @@ body {
   overflow-x: hidden;
 }
 
+@media (min-width: 768px) {
+  .dash-aside {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  .dash-main {
+    height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
 .dash-main {
   background: linear-gradient(
     160deg,
@@ -260,7 +275,8 @@ body {
 
 @media (min-width: 768px) {
   .dash-aside nav {
-    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: auto;
   }
 }
 

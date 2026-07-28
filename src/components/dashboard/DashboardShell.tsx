@@ -27,8 +27,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="dash-root min-h-screen text-[var(--ink)] md:grid md:grid-cols-[260px_1fr]">
-      <aside className="dash-aside relative overflow-hidden border-b border-white/10 px-5 py-6 text-[var(--cream)] md:min-h-screen md:border-b-0 md:border-r md:border-white/10">
+    <div className="dash-root min-h-screen text-[var(--ink)] md:grid md:h-dvh md:grid-cols-[260px_1fr] md:overflow-hidden">
+      <aside className="dash-aside relative z-40 overflow-hidden border-b border-white/10 px-5 py-6 text-[var(--cream)] md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:border-b-0 md:border-r md:border-white/10">
         <div className="pointer-events-none absolute -left-16 top-10 h-40 w-40 rounded-full bg-[var(--gold)]/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-10 right-0 h-32 w-32 rounded-full bg-[var(--nude)]/10 blur-3xl" />
 
@@ -36,7 +36,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex items-center gap-3"
+          className="relative z-10 flex shrink-0 items-center gap-3"
         >
           <IconBubble icon={Sparkles} tone="cream" size={16} />
           <div>
@@ -49,7 +49,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </motion.div>
 
-        <nav className="relative z-10 mt-10 flex flex-row flex-wrap gap-2 overflow-x-hidden overflow-y-hidden pb-1 md:flex-col md:flex-nowrap md:gap-1.5 md:overflow-hidden md:pb-0">
+        <nav className="relative z-10 mt-10 flex flex-row flex-wrap gap-2 overflow-x-hidden overflow-y-hidden pb-1 md:mt-10 md:min-h-0 md:flex-1 md:flex-col md:flex-nowrap md:gap-1.5 md:overflow-x-hidden md:overflow-y-auto md:pb-0">
           {nav.map((item, i) => {
             const active = pathname === item.href;
             const Icon = dashNavIcons[item.href];
@@ -84,7 +84,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="relative z-10 mt-8 flex gap-4 md:mt-16 md:flex-col md:gap-3">
+        <div className="relative z-10 mt-8 flex shrink-0 gap-4 md:mt-auto md:flex-col md:gap-3 md:pt-6">
           <Link href="/" className="dash-aside-link inline-flex items-center gap-2">
             <ExternalLink size={14} strokeWidth={1.6} />
             Ver site
@@ -100,7 +100,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="dash-main relative px-5 py-8 md:px-10 md:py-10">
+      <main className="dash-main relative px-5 py-8 md:h-dvh md:overflow-x-hidden md:overflow-y-auto md:px-10 md:py-10">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-[var(--gold)]/10 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-56 w-56 rounded-full bg-[var(--nude-deep)]/30 blur-3xl" />

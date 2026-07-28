@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { formatPrice } from "@/data/services";
 import { monthlyInsights } from "@/data/dashboard-mock";
+import { TrendingUp } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 type Point = { monthLabel: string; revenue: number; appointments?: number };
@@ -32,9 +33,14 @@ export function MonthlyRevenueChart({
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-3 flex items-end justify-between gap-2">
-        <div>
-          <h3 className="display text-xl text-[var(--chocolate)]">Receita mensal</h3>
-          <p className="text-xs text-[var(--muted)]">Últimos 6 meses · mock</p>
+        <div className="flex items-start gap-2.5">
+          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[rgba(184,149,106,0.16)] text-[var(--gold-dim)]">
+            <TrendingUp size={15} strokeWidth={1.7} />
+          </span>
+          <div>
+            <h3 className="display text-xl text-[var(--chocolate)]">Receita mensal</h3>
+            <p className="text-xs text-[var(--muted)]">Últimos 6 meses · mock</p>
+          </div>
         </div>
         <p className="display text-lg text-[var(--gold-dim)]">
           {formatPrice(series[series.length - 1]?.revenue || 0)}
