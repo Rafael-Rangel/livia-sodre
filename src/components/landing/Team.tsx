@@ -18,23 +18,19 @@ export function Team() {
       const cards = root.current?.querySelectorAll(".team-card");
       if (!cards?.length) return;
 
-      gsap.fromTo(
-        cards,
-        { y: 36, autoAlpha: 0 },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.85,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top 85%",
-            toggleActions: "play none none none",
-            once: true,
-          },
+      gsap.from(cards, {
+        y: 28,
+        duration: 0.75,
+        stagger: 0.1,
+        ease: "power3.out",
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top 90%",
+          toggleActions: "play none none none",
+          once: true,
         },
-      );
+      });
     },
     { scope: root },
   );

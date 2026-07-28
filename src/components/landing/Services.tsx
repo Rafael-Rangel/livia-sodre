@@ -40,24 +40,20 @@ export function Services() {
       const items = root.current?.querySelectorAll(".svc-item");
       if (!items?.length) return;
 
-      gsap.fromTo(
-        items,
-        { y: 28, autoAlpha: 0 },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.7,
-          stagger: 0.06,
-          ease: "power2.out",
-          overwrite: "auto",
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top 85%",
-            toggleActions: "play none none none",
-            once: true,
-          },
+      // Never hide content — only lift into place (avoids blank sections with Lenis/pin)
+      gsap.from(items, {
+        y: 22,
+        duration: 0.65,
+        stagger: 0.05,
+        ease: "power2.out",
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top 90%",
+          toggleActions: "play none none none",
+          once: true,
         },
-      );
+      });
     },
     { scope: root, dependencies: [filter], revertOnUpdate: true },
   );

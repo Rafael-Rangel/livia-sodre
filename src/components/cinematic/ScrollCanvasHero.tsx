@@ -277,76 +277,66 @@ export function ScrollCanvasHero() {
       const ctas = overlay.querySelector(".cine-ctas");
       const quote = overlay.querySelector(".cine-quote");
 
+      // Keep brand copy always readable — never start at opacity 0 (was causing blank hero)
       const splits: SplitType[] = [];
-      [eyebrow, script, title, sub, quote].forEach((el) => {
+      [eyebrow, script, title].forEach((el) => {
         if (!el) return;
-        splits.push(new SplitType(el as HTMLElement, { types: "words,chars" }));
+        splits.push(new SplitType(el as HTMLElement, { types: "chars" }));
       });
 
-      gsap.set(".char, .word", { opacity: 0, y: 24 });
-      gsap.set([script, quote, title, sub, ctas], { opacity: 0 });
+      gsap.fromTo(
+        overlay.querySelectorAll(".char"),
+        { y: 18, opacity: 0.35 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.9,
+          stagger: 0.012,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+        },
+      );
+      gsap.fromTo(
+        [sub, quote, ctas].filter(Boolean),
+        { y: 16, opacity: 0.4 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.08,
+          delay: 0.25,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+        },
+      );
 
       const pinEnd =
         typeof window !== "undefined" && window.innerWidth < 768
           ? Math.max(280, Math.round(manifest.scrollPinVh * 0.7))
           : manifest.scrollPinVh;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: `+=${pinEnd}%`,
-          pin: true,
-          scrub: 0.35,
-          anticipatePin: 1,
-          fastScrollEnd: true,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const start = Math.min(
-              Math.max(0, manifest.startFrame ?? 0),
-              Math.max(0, manifest.total - 1),
-            );
-            const end = manifest.total - 1;
-            const idx = Math.round(start + self.progress * (end - start));
-            (
-              section as HTMLElement & { __setFrame?: (i: number) => void }
-            ).__setFrame?.(Math.min(end, Math.max(start, idx)));
-          },
-          onLeave: () => ScrollTrigger.refresh(),
-          onEnterBack: () => ScrollTrigger.refresh(),
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: `+=${pinEnd}%`,
+        pin: true,
+        scrub: 0.35,
+        anticipatePin: 1,
+        fastScrollEnd: true,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const start = Math.min(
+            Math.max(0, manifest.startFrame ?? 0),
+            Math.max(0, manifest.total - 1),
+          );
+          const end = manifest.total - 1;
+          const idx = Math.round(start + self.progress * (end - start));
+          (
+            section as HTMLElement & { __setFrame?: (i: number) => void }
+          ).__setFrame?.(Math.min(end, Math.max(start, idx)));
         },
+        onLeave: () => ScrollTrigger.refresh(),
       });
-
-      tl.to({}, { duration: 0.06 })
-        .to(
-          eyebrow?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.012, duration: 0.1, ease: "power2.out" },
-          0.06,
-        )
-        .to(script, { opacity: 1, duration: 0.01 }, 0.25)
-        .to(
-          script?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.016, duration: 0.12, ease: "power2.out" },
-          0.25,
-        )
-        .to(quote, { opacity: 1, duration: 0.01 }, 0.48)
-        .to(
-          quote?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.01, duration: 0.1 },
-          0.48,
-        )
-        .to([title, sub], { opacity: 1, duration: 0.01 }, 0.76)
-        .to(
-          title?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.014, duration: 0.14, ease: "power3.out" },
-          0.76,
-        )
-        .to(
-          sub?.querySelectorAll(".char, .word") || [],
-          { opacity: 1, y: 0, stagger: 0.008, duration: 0.1 },
-          0.84,
-        )
-        .to(ctas, { opacity: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.9);
 
       const pulse = animate(".cine-scroll-hint", {
         opacity: [0.35, 0.9, 0.35],
@@ -357,13 +347,15 @@ export function ScrollCanvasHero() {
       });
 
       requestAnimationFrame(() => ScrollTrigger.refresh());
+      const refreshLater = window.setTimeout(() => ScrollTrigger.refresh(), 800);
 
       return () => {
+        window.clearTimeout(refreshLater);
         pulse.pause();
         splits.forEach((s) => s.revert());
       };
     },
-    { scope: sectionRef, dependencies: [manifest, reduced, ready] },
+    { scope: sectionRef, dependencies: [manifest, reduced] },
   );
 
   if (reduced) {
@@ -446,7 +438,7 @@ export function ScrollCanvasHero() {
           <p className="cine-sub mt-4 max-w-lg text-[var(--muted)] leading-relaxed">
             {brand.tagline}
           </p>
-          <div className="cine-ctas mt-8 flex flex-wrap gap-3 opacity-0">
+          <div className="cine-ctas mt-8 flex flex-wrap gap-3">
             <Link href="/agendar" className="btn-primary">
               Agendar agora
             </Link>
