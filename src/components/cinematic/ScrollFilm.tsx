@@ -358,35 +358,28 @@ export function ScrollFilm() {
       <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-5 pb-16 pt-28 md:justify-center md:px-8 md:pb-24">
         <div
           key={beat.id}
-          className="story-beat max-w-xl pointer-events-auto md:max-w-2xl"
-          style={{
-            animation: "storyBeatIn 0.55s ease both",
-          }}
+          className="story-glass pointer-events-auto max-w-xl md:max-w-2xl"
         >
           <p className="eyebrow text-[var(--gold-dim)]">{beat.eyebrow}</p>
           {beat.script ? (
-            <p className="script mt-5 text-[clamp(2.4rem,7vw,4.4rem)] text-[var(--gold)]">
+            <p className="script mt-4 text-[clamp(2.4rem,7vw,4.4rem)] text-[var(--gold)] drop-shadow-sm">
               {beat.script}
             </p>
           ) : null}
           {beat.id === "limiar" ? (
-            <h1
-              className="display mt-4 text-[clamp(2.6rem,6.5vw,5.2rem)] leading-[0.95] text-[var(--chocolate)]"
-            >
+            <h1 className="display mt-3 text-[clamp(2.4rem,6vw,4.8rem)] leading-[0.95] text-[var(--chocolate)]">
               {beat.title}
             </h1>
           ) : (
-            <h2
-              className="display mt-4 text-[clamp(2.4rem,5.5vw,4.2rem)] leading-[0.95] text-[var(--chocolate)]"
-            >
+            <h2 className="display mt-3 text-[clamp(2.2rem,5vw,3.8rem)] leading-[0.95] text-[var(--chocolate)]">
               {beat.title}
             </h2>
           )}
-          <p className="mt-4 max-w-lg text-[var(--muted)] leading-relaxed md:text-base">
+          <p className="mt-4 max-w-lg text-[var(--brown)] leading-relaxed md:text-base">
             {beat.body}
           </p>
           {beat.showCta ? (
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/agendar" className="btn-primary">
                 Agendar agora
               </Link>
