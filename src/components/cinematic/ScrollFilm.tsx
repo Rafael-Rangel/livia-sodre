@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { brand } from "@/data/content";
+import { CalendarDays, Sparkles } from "@/lib/icons";
 import { activeBeat, type StoryBeat } from "@/data/scroll-story";
 import type { WorkerRequest, WorkerResponse } from "@/workers/frame-loader.worker";
 
@@ -310,10 +311,12 @@ export function ScrollFilm() {
           </h1>
           <p className="mt-4 max-w-lg text-[var(--muted)]">{brand.tagline}</p>
           <div className="mt-8 flex gap-3">
-            <Link href="/agendar" className="btn-primary">
+            <Link href="/agendar" className="btn-primary inline-flex items-center gap-2">
+              <CalendarDays size={15} strokeWidth={1.7} />
               Agendar agora
             </Link>
-            <Link href="#servicos" className="btn-ghost">
+            <Link href="#servicos" className="btn-ghost inline-flex items-center gap-2">
+              <Sparkles size={15} strokeWidth={1.7} />
               Ver serviços
             </Link>
           </div>
@@ -380,10 +383,12 @@ export function ScrollFilm() {
           </p>
           {beat.showCta ? (
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/agendar" className="btn-primary">
+              <Link href="/agendar" className="btn-primary inline-flex items-center gap-2">
+                <CalendarDays size={15} strokeWidth={1.7} />
                 Agendar agora
               </Link>
-              <Link href="#servicos" className="btn-ghost">
+              <Link href="#servicos" className="btn-ghost inline-flex items-center gap-2">
+                <Sparkles size={15} strokeWidth={1.7} />
                 Ver serviços
               </Link>
             </div>

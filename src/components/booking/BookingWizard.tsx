@@ -5,12 +5,33 @@ import { useSearchParams } from "next/navigation";
 import { addDays, format, setHours, setMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
-import { services, formatPrice, formatDuration } from "@/data/services";
+import {
+  services,
+  formatPrice,
+  formatDuration,
+} from "@/data/services";
 import { team } from "@/data/team";
 import { brand } from "@/data/content";
 import { whatsappLink } from "@/lib/utils";
+import { IconBubble } from "@/components/ui/IconBubble";
+import {
+  ArrowLeft,
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  MessageCircle,
+  Sparkles,
+  User,
+  Users,
+  categoryIcons,
+} from "@/lib/icons";
 
-const steps = ["Serviço", "Profissional", "Horário", "Dados"];
+const steps = [
+  { label: "Serviço", icon: Sparkles },
+  { label: "Profissional", icon: Users },
+  { label: "Horário", icon: CalendarDays },
+  { label: "Dados", icon: User },
+];
 
 function slotsForDay(base: Date) {
   const hours = [9, 10, 11, 14, 15, 16, 17];
@@ -79,7 +100,10 @@ export function BookingWizard() {
     );
     return (
       <div className="mx-auto max-w-xl border border-[var(--line)] bg-white/40 p-8 text-center">
-        <p className="eyebrow text-[var(--gold-dim)]">Agendamento enviado</p>
+        <div className="flex justify-center">
+          <IconBubble icon={CheckCircle2} tone="gold" size={22} className="!h-14 !w-14 !rounded-2xl" />
+        </div>
+        <p className="eyebrow mt-4 text-[var(--gold-dim)]">Agendamento enviado</p>
         <h2 className="script mt-3 text-5xl text-[var(--gold)]">Perfeito!</h2>
         <p className="mt-4 text-[var(--muted)]">
           Recebemos seu pedido. Em breve confirmamos pelo WhatsApp.
@@ -87,7 +111,13 @@ export function BookingWizard() {
         <p className="mt-6 text-sm text-[var(--brown)]">
           Protocolo <strong>{done.id}</strong>
         </p>
-        <a href={wa} target="_blank" rel="noreferrer" className="btn-primary mt-8 inline-flex">
+        <a
+          href={wa}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-primary mt-8 inline-flex items-center gap-2"
+        >
+          <MessageCircle size={15} strokeWidth={1.7} />
           Confirmar no WhatsApp
         </a>
       </div>
@@ -97,19 +127,19 @@ export function BookingWizard() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-10 flex items-center justify-between gap-2">
-        {steps.map((label, i) => (
-          <div key={label} className="flex flex-1 flex-col items-center gap-2">
+        {steps.map((s, i) => (
+          <div key={s.label} className="flex flex-1 flex-col items-center gap-2">
             <div
               className={
                 i <= step
-                  ? "flex h-8 w-8 items-center justify-center bg-[var(--chocolate)] text-xs text-[var(--cream)]"
-                  : "flex h-8 w-8 items-center justify-center border border-[var(--line)] text-xs text-[var(--muted)]"
+                  ? "flex h-9 w-9 items-center justify-center rounded-full bg-[var(--chocolate)] text-[var(--cream)]"
+                  : "flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[var(--muted)]"
               }
             >
-              {i + 1}
+              <s.icon size={15} strokeWidth={1.7} />
             </div>
             <span className="hidden text-[10px] tracking-[0.14em] uppercase text-[var(--muted)] sm:block">
-              {label}
+              {s.label}
             </span>
           </div>
         ))}
@@ -125,25 +155,32 @@ export function BookingWizard() {
         >
           {step === 0 && (
             <div className="grid gap-3 sm:grid-cols-2">
-              {services.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => {
-                    setServiceId(s.id);
-                    setStep(1);
-                  }}
-                  className="border border-[var(--line)] bg-white/30 p-4 text-left transition hover:border-[var(--gold)]"
-                >
-                  <p className="display text-lg text-[var(--chocolate)]">
-                    {s.name}
-                  </p>
-                  <p className="mt-2 text-xs text-[var(--muted)]">
-                    {formatDuration(s.durationMin)} · a partir de{" "}
-                    {formatPrice(s.priceFrom)}
-                  </p>
-                </button>
-              ))}
+              {services.map((s) => {
+                const Icon = categoryIcons[s.category];
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      setServiceId(s.id);
+                      setStep(1);
+                    }}
+                    className="group flex gap-3 border border-[var(--line)] bg-white/30 p-4 text-left transition hover:border-[var(--gold)]"
+                  >
+                    <IconBubble icon={Icon} tone="soft" size={16} />
+                    <span>
+                      <span className="display block text-lg text-[var(--chocolate)]">
+                        {s.name}
+                      </span>
+                      <span className="mt-2 inline-flex items-center gap-1 text-xs text-[var(--muted)]">
+                        <Clock size={11} />
+                        {formatDuration(s.durationMin)} · a partir de{" "}
+                        {formatPrice(s.priceFrom)}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -190,10 +227,11 @@ export function BookingWizard() {
                       onClick={() => setDayOffset(offset)}
                       className={
                         dayOffset === offset
-                          ? "bg-[var(--chocolate)] px-3 py-2 text-xs text-[var(--cream)]"
-                          : "border border-[var(--line)] px-3 py-2 text-xs text-[var(--brown)]"
+                          ? "inline-flex items-center gap-1.5 bg-[var(--chocolate)] px-3 py-2 text-xs text-[var(--cream)]"
+                          : "inline-flex items-center gap-1.5 border border-[var(--line)] px-3 py-2 text-xs text-[var(--brown)]"
                       }
                     >
+                      <CalendarDays size={12} strokeWidth={1.7} />
                       {format(d, "EEE dd/MM", { locale: ptBR })}
                     </button>
                   );
@@ -210,8 +248,9 @@ export function BookingWizard() {
                         setStartsAt(iso);
                         setStep(3);
                       }}
-                      className="border border-[var(--line)] bg-white/40 py-3 text-sm text-[var(--chocolate)] hover:border-[var(--gold)]"
+                      className="inline-flex items-center justify-center gap-1.5 border border-[var(--line)] bg-white/40 py-3 text-sm text-[var(--chocolate)] hover:border-[var(--gold)]"
                     >
+                      <Clock size={13} strokeWidth={1.7} />
                       {format(slot, "HH:mm")}
                     </button>
                   );
@@ -222,7 +261,8 @@ export function BookingWizard() {
 
           {step === 3 && (
             <div className="space-y-4 border border-[var(--line)] bg-white/40 p-6">
-              <p className="text-sm text-[var(--muted)]">
+              <p className="inline-flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
+                <Sparkles size={14} className="text-[var(--gold-dim)]" />
                 {service?.name} · {professional?.name} ·{" "}
                 {startsAt &&
                   format(new Date(startsAt), "dd/MM 'às' HH:mm", {
@@ -258,8 +298,9 @@ export function BookingWizard() {
                 type="button"
                 disabled={loading || name.length < 2 || phone.length < 8}
                 onClick={submit}
-                className="btn-primary w-full disabled:opacity-50"
+                className="btn-primary inline-flex w-full items-center justify-center gap-2 disabled:opacity-50"
               >
+                <CheckCircle2 size={15} strokeWidth={1.7} />
                 {loading ? "Enviando..." : "Confirmar agendamento"}
               </button>
             </div>
@@ -271,8 +312,9 @@ export function BookingWizard() {
         <button
           type="button"
           onClick={() => setStep((s) => Math.max(0, s - 1))}
-          className="mt-6 text-xs tracking-[0.16em] uppercase text-[var(--muted)]"
+          className="mt-6 inline-flex items-center gap-1.5 text-xs tracking-[0.16em] uppercase text-[var(--muted)]"
         >
+          <ArrowLeft size={13} strokeWidth={1.7} />
           Voltar
         </button>
       )}

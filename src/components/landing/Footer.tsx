@@ -1,5 +1,21 @@
 import Link from "next/link";
 import { brand } from "@/data/content";
+import {
+  CalendarDays,
+  AtSign,
+  LayoutDashboard,
+  MapPin,
+  Phone,
+  Sparkles,
+  Users,
+} from "@/lib/icons";
+
+const nav = [
+  { href: "/#servicos", label: "Serviços", icon: Sparkles },
+  { href: "/#equipe", label: "Equipe", icon: Users },
+  { href: "/agendar", label: "Agendar", icon: CalendarDays },
+  { href: "/dashboard", label: "Área da clínica", icon: LayoutDashboard },
+];
 
 export function Footer() {
   return (
@@ -22,18 +38,14 @@ export function Footer() {
 
         <div>
           <p className="eyebrow">Navegação</p>
-          <div className="mt-4 flex flex-col gap-2">
-            {[
-              ["/#servicos", "Serviços"],
-              ["/#equipe", "Equipe"],
-              ["/agendar", "Agendar"],
-              ["/dashboard", "Área da clínica"],
-            ].map(([href, label]) => (
+          <div className="mt-4 flex flex-col gap-2.5">
+            {nav.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
-                className="text-sm text-[var(--brown)] no-underline hover:text-[var(--chocolate)]"
+                className="inline-flex items-center gap-2 text-sm text-[var(--brown)] no-underline hover:text-[var(--chocolate)]"
               >
+                <Icon size={14} strokeWidth={1.7} className="text-[var(--gold-dim)]" />
                 {label}
               </Link>
             ))}
@@ -42,15 +54,22 @@ export function Footer() {
 
         <div>
           <p className="eyebrow">Contato</p>
-          <div className="mt-4 space-y-2 text-sm text-[var(--brown)]">
-            <p>{brand.address.full}</p>
-            <p>{brand.phone}</p>
+          <div className="mt-4 space-y-3 text-sm text-[var(--brown)]">
+            <p className="inline-flex items-start gap-2">
+              <MapPin size={14} strokeWidth={1.7} className="mt-0.5 shrink-0 text-[var(--gold-dim)]" />
+              {brand.address.full}
+            </p>
+            <p className="inline-flex items-center gap-2">
+              <Phone size={14} strokeWidth={1.7} className="text-[var(--gold-dim)]" />
+              {brand.phone}
+            </p>
             <a
               href={brand.instagram}
               target="_blank"
               rel="noreferrer"
-              className="block text-[var(--chocolate)] underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-2 text-[var(--chocolate)] underline-offset-4 hover:underline"
             >
+              <AtSign size={14} strokeWidth={1.7} className="text-[var(--gold-dim)]" />
               @{brand.instagram.split("/").filter(Boolean).pop()}
             </a>
           </div>

@@ -4,12 +4,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { brand } from "@/data/content";
 import { cn } from "@/lib/utils";
+import {
+  CalendarDays,
+  Menu,
+  Sparkles,
+  Users,
+  X,
+} from "@/lib/icons";
 
 const links = [
-  { href: "#servicos", label: "Serviços" },
-  { href: "#equipe", label: "Equipe" },
-  { href: "#sobre", label: "Sobre" },
-  { href: "/agendar", label: "Agendar" },
+  { href: "#servicos", label: "Serviços", icon: Sparkles },
+  { href: "#equipe", label: "Equipe", icon: Users },
+  { href: "#sobre", label: "Sobre", icon: Sparkles },
+  { href: "/agendar", label: "Agendar", icon: CalendarDays },
 ];
 
 export function Navbar() {
@@ -47,30 +54,33 @@ export function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-7 md:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-[11px] tracking-[0.2em] uppercase text-[var(--brown)] no-underline transition-colors hover:text-[var(--gold)]"
+              className="inline-flex items-center gap-1.5 text-[11px] tracking-[0.2em] uppercase text-[var(--brown)] no-underline transition-colors hover:text-[var(--gold)]"
             >
+              <l.icon size={13} strokeWidth={1.7} />
               {l.label}
             </Link>
           ))}
-          <Link href="/agendar" className="btn-primary !py-2.5 !px-4 !text-[10px]">
+          <Link
+            href="/agendar"
+            className="btn-primary inline-flex !items-center gap-1.5 !py-2.5 !px-4 !text-[10px]"
+          >
+            <CalendarDays size={12} strokeWidth={1.8} />
             Agendar horário
           </Link>
         </nav>
 
         <button
           type="button"
-          aria-label="Menu"
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          className="md:hidden flex items-center justify-center p-2 text-[var(--chocolate)]"
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="block h-px w-6 bg-[var(--chocolate)]" />
-          <span className="block h-px w-6 bg-[var(--chocolate)]" />
-          <span className="block h-px w-4 bg-[var(--chocolate)]" />
+          {open ? <X size={22} strokeWidth={1.6} /> : <Menu size={22} strokeWidth={1.6} />}
         </button>
       </div>
 
@@ -82,8 +92,9 @@ export function Navbar() {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="text-sm tracking-[0.18em] uppercase text-[var(--chocolate)] no-underline"
+                className="inline-flex items-center gap-2 text-sm tracking-[0.18em] uppercase text-[var(--chocolate)] no-underline"
               >
+                <l.icon size={15} strokeWidth={1.7} className="text-[var(--gold-dim)]" />
                 {l.label}
               </Link>
             ))}
