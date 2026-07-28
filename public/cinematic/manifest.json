@@ -1,10 +1,14 @@
-{
-  "total": 96,
-  "pad": 3,
-  "width": 1280,
-  "height": 720,
-  "formats": ["avif", "webp"],
-  "basePath": "/cinematic/frames",
-  "poster": "/cinematic/frames/frame-000.webp",
-  "scrollPinVh": 320
+﻿{
+    "width":  1280,
+    "total":  96,
+    "basePath":  "/cinematic/frames",
+    "source":  "openai-sora-2-8s",
+    "scrollPinVh":  320,
+    "formats":  [
+                    "avif",
+                    "webp"
+                ],
+    "height":  720,
+    "poster":  "/cinematic/frames/frame-000.webp",
+    "pad":  3
 }
