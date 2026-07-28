@@ -51,14 +51,14 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/cinematic/frames/frame-000.webp"
+          href="/cinematic/frames/frame-022.webp"
           type="image/webp"
         />
         <link
           rel="preload"
           as="image"
-          href="/cinematic/frames/frame-000.avif"
-          type="image/avif"
+          href="/cinematic/frames/frame-040.webp"
+          type="image/webp"
         />
       </head>
       <body className="min-h-full font-[family-name:var(--font-body)]">

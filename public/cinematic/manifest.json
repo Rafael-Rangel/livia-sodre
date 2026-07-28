@@ -7,14 +7,16 @@
   "basePath": "/cinematic/frames",
   "source": "ritual-cuidar-4-chapters-sora2",
   "quality": "high",
-  "scrollPinVh": 360,
+  "scrollPinVh": 520,
   "formats": ["webp"],
   "poster": "/cinematic/frames/frame-040.webp",
+  "mode": "scroll-film",
+  "playback": "none",
   "chapters": [
     { "title": "Limiar", "id": "limiar", "start": 22, "end": 49 },
     { "title": "Acolhimento", "id": "acolhimento", "start": 50, "end": 99 },
     { "title": "Ritual", "id": "ritual", "start": 100, "end": 149 },
     { "title": "Renascimento", "id": "renascimento", "start": 150, "end": 202 }
   ],
-  "note": "Same continuous 4-chapter master, re-encoded WebP q96 (was ~15KB/frame)"
+  "note": "Frames only — never play MP4 on the page. See docs/ROTEIRO-SCROLL-FILM.md"
 }
