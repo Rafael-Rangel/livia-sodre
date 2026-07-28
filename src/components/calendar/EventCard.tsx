@@ -49,9 +49,9 @@ export function EventCard({
         opacity: muted ? 0.55 : 1,
       }}
       className={cn(
-        "cal-event group absolute left-1 right-1 z-10 overflow-hidden rounded-md px-1.5 py-1 text-left shadow-sm transition",
-        "hover:z-20 hover:shadow-md hover:brightness-[1.03]",
-        dragging && "z-30 cursor-grabbing opacity-90 shadow-lg",
+        "cal-event group absolute z-10 overflow-hidden rounded-md px-1.5 py-1 text-left shadow-sm transition",
+        "hover:z-30 hover:shadow-md hover:brightness-[1.03]",
+        dragging && "z-40 cursor-grabbing opacity-90 shadow-lg",
         className,
       )}
     >

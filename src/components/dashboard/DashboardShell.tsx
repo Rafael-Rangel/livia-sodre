@@ -9,7 +9,7 @@ import { dashNavIcons, ExternalLink, LogOut, Sparkles } from "@/lib/icons";
 import { IconBubble } from "@/components/ui/IconBubble";
 
 const nav = [
-  { href: "/dashboard", label: "Visão geral" },
+  { href: "/dashboard", label: "Centro" },
   { href: "/dashboard/agenda", label: "Agenda" },
   { href: "/dashboard/agendamentos", label: "Lista" },
   { href: "/dashboard/financeiro", label: "Financeiro" },
@@ -49,7 +49,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </motion.div>
 
-        <nav className="relative z-10 mt-10 flex flex-row gap-2 overflow-x-auto pb-1 md:flex-col md:gap-1.5">
+        <nav className="relative z-10 mt-10 flex flex-row flex-wrap gap-2 overflow-x-hidden overflow-y-hidden pb-1 md:flex-col md:flex-nowrap md:gap-1.5 md:overflow-hidden md:pb-0">
           {nav.map((item, i) => {
             const active = pathname === item.href;
             const Icon = dashNavIcons[item.href];

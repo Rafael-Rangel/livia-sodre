@@ -3,15 +3,15 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DashCard, DashReveal, StatusPill } from "@/components/dashboard/DashUI";
+import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
+import {
+  PaymentMethodCharts,
+  paymentMethodMock,
+  type PaymentMethodStat,
+} from "@/components/dashboard/PaymentMethodCharts";
 import { IconBubble } from "@/components/ui/IconBubble";
 import { formatPrice } from "@/data/services";
-import { monthlyInsights } from "@/data/dashboard-mock";
-import {
-  Banknote,
-  CreditCard,
-  TrendingUp,
-  Wallet,
-} from "@/lib/icons";
+import { Banknote, TrendingUp, Wallet } from "@/lib/icons";
 import type { Appointment } from "@/lib/types";
 
 type Props = {
@@ -31,7 +31,16 @@ export function FinanceiroClient({
   pending,
   methodBreakdown,
 }: Props) {
-  const maxMonth = Math.max(...monthlyInsights.map((m) => m.revenue));
+  const colors = Object.fromEntries(
+    paymentMethodMock.map((m) => [m.method, m.color]),
+  );
+  const methods: PaymentMethodStat[] =
+    methodBreakdown.length > 0
+      ? methodBreakdown.map((m) => ({
+          ...m,
+          color: colors[m.method] || "#b8956a",
+        }))
+      : paymentMethodMock;
 
   return (
     <>
@@ -83,60 +92,20 @@ export function FinanceiroClient({
         </DashCard>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <DashCard delay={0.18} className="p-6">
-          <div className="flex items-center gap-3">
-            <IconBubble icon={TrendingUp} tone="soft" size={16} />
-            <h2 className="display text-2xl text-[var(--chocolate)]">
-              Evolução 6 meses
-            </h2>
-          </div>
-          <ul className="mt-6 space-y-4">
-            {monthlyInsights.map((m) => (
-              <li key={m.monthLabel} className="dash-row rounded-lg px-2 py-2">
-                <div className="mb-1.5 flex justify-between text-sm">
-                  <span className="text-[var(--chocolate)]">{m.monthLabel}</span>
-                  <span className="text-[var(--gold-dim)]">
-                    {formatPrice(m.revenue)} · {m.appointments} ag.
-                  </span>
-                </div>
-                <div className="dash-bar">
-                  <span style={{ width: `${(m.revenue / maxMonth) * 100}%` }} />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </DashCard>
+      <DashCard delay={0.18} className="mt-6 p-6">
+        <MonthlyRevenueChart height={200} />
+      </DashCard>
 
-        <DashCard delay={0.22} className="p-6">
-          <div className="flex items-center gap-3">
-            <IconBubble icon={CreditCard} tone="soft" size={16} />
-            <h2 className="display text-2xl text-[var(--chocolate)]">
-              Por método de pagamento
-            </h2>
-          </div>
-          <ul className="mt-6 space-y-1">
-            {methodBreakdown.map((m) => (
-              <li
-                key={m.method}
-                className="dash-row flex items-center justify-between rounded-xl px-3 py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <IconBubble icon={CreditCard} tone="soft" size={14} className="!h-8 !w-8" />
-                  <div>
-                    <p className="text-[var(--chocolate)]">{m.method}</p>
-                    <p className="text-xs text-[var(--muted)]">
-                      {m.count} transações
-                    </p>
-                  </div>
-                </div>
-                <p className="display text-xl text-[var(--gold-dim)]">
-                  {formatPrice(m.total)}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </DashCard>
+      <div className="mt-6">
+        <DashReveal delay={0.2}>
+          <p className="eyebrow">Métodos de pagamento</p>
+          <h2 className="display mt-2 text-3xl text-[var(--chocolate)]">
+            Por método de pagamento
+          </h2>
+        </DashReveal>
+        <div className="mt-4">
+          <PaymentMethodCharts data={methods.length ? methods : paymentMethodMock} />
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -147,7 +116,7 @@ export function FinanceiroClient({
               Pagamentos recebidos
             </h2>
           </div>
-          <ul className="mt-5 max-h-80 space-y-1 overflow-y-auto">
+          <ul className="mt-5 max-h-80 space-y-1 overflow-x-hidden overflow-y-auto">
             {paid.map((a) => (
               <li
                 key={a.id}
@@ -173,7 +142,7 @@ export function FinanceiroClient({
             <IconBubble icon={Banknote} tone="soft" size={16} />
             <h2 className="display text-2xl text-[var(--chocolate)]">A receber</h2>
           </div>
-          <ul className="mt-5 max-h-80 space-y-1 overflow-y-auto">
+          <ul className="mt-5 max-h-80 space-y-1 overflow-x-hidden overflow-y-auto">
             {pending.map((a) => (
               <li
                 key={a.id}

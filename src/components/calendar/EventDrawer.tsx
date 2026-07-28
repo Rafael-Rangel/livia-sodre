@@ -95,7 +95,7 @@ export function EventDrawer() {
               </button>
             </div>
 
-            <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5 text-sm">
+            <div className="flex-1 space-y-5 overflow-x-hidden overflow-y-auto px-5 py-5 text-sm">
               {(() => {
                 const c = categoryColors[apt.category];
                 const st = normalizeStatus(apt.status);

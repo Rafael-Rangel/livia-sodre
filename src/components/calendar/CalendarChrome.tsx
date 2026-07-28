@@ -181,7 +181,7 @@ export function CalendarFiltersPanel() {
   }
 
   return (
-    <aside className="cal-scroll max-h-[calc(100vh-8rem)] space-y-5 overflow-auto rounded-2xl border border-white/40 bg-white/35 p-4 backdrop-blur">
+    <aside className="cal-scroll max-h-[calc(100vh-8rem)] space-y-5 overflow-x-hidden overflow-y-auto rounded-2xl border border-white/40 bg-white/35 p-4 backdrop-blur">
       <div>
         <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
           Período
@@ -353,7 +353,7 @@ export function CalendarMetricsBar() {
     { label: "Top procedimento", value: metrics.topSvc },
   ];
   return (
-    <div className="cal-scroll flex gap-2 overflow-x-auto pb-1">
+    <div className="cal-scroll flex flex-wrap gap-2 overflow-x-hidden pb-1">
       {cards.map((c) => (
         <div
           key={c.label}

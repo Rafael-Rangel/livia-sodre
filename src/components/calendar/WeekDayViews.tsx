@@ -13,6 +13,10 @@ import {
   totalDayMinutes,
   weekDays,
 } from "@/lib/calendar/time";
+import {
+  layoutOverlappingEvents,
+  overlapStyle,
+} from "@/lib/calendar/layout";
 import { useCalendarStore } from "@/store/calendar-store";
 import { EventCard } from "./EventCard";
 import { CurrentTimeLine, HourGrid, HourLabels } from "./TimeGrid";
@@ -113,7 +117,7 @@ export function WeekView({ items }: { items: Appointment[] }) {
   }
 
   return (
-    <div className="cal-scroll flex h-full min-h-0 flex-col overflow-auto rounded-2xl border border-white/40 bg-white/35 backdrop-blur">
+    <div className="cal-scroll flex h-full min-h-0 flex-col overflow-x-hidden overflow-y-auto rounded-2xl border border-white/40 bg-white/35 backdrop-blur">
       <div className="sticky top-0 z-30 flex border-b border-white/50 bg-[rgba(250,246,240,0.92)] backdrop-blur">
         <div className="w-14 shrink-0" />
         {days.map((d) => (
@@ -162,16 +166,21 @@ export function WeekView({ items }: { items: Appointment[] }) {
               >
                 <HourGrid zoom={zoom} />
                 <CurrentTimeLine day={d} zoom={zoom} />
-                {dayItems.map((apt) => {
+                {layoutOverlappingEvents(dayItems).map(({ apt, column, columns }) => {
                   const top = (minutesFromOpen(parseISO(apt.startsAt)) / 60) * zoom;
                   const h = Math.max(22, (apt.durationMin / 60) * zoom);
                   return (
                     <EventCard
                       key={apt.id}
                       apt={apt}
-                      compact={h < 48}
+                      compact={h < 48 || columns > 2}
                       showResize
-                      style={{ top, height: h }}
+                      style={{
+                        top,
+                        height: h,
+                        ...overlapStyle(column, columns),
+                        zIndex: 10 + column,
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
                         select(apt.id);
@@ -207,10 +216,13 @@ export function DayView({ items }: { items: Appointment[] }) {
   const height = (totalDayMinutes() / 60) * zoom;
   const { startMove, startResize } = useDragResize();
   const colRef = useRef<HTMLDivElement | null>(null);
-  const dayItems = items.filter((a) => isSameDay(parseISO(a.startsAt), cursor));
+  const laidOut = useMemo(() => {
+    const dayItems = items.filter((a) => isSameDay(parseISO(a.startsAt), cursor));
+    return layoutOverlappingEvents(dayItems);
+  }, [items, cursor]);
 
   return (
-    <div className="cal-scroll h-full overflow-auto rounded-2xl border border-white/40 bg-white/35 backdrop-blur">
+    <div className="cal-scroll h-full overflow-x-hidden overflow-y-auto rounded-2xl border border-white/40 bg-white/35 backdrop-blur">
       <div className="sticky top-0 z-30 border-b border-white/50 bg-[rgba(250,246,240,0.92)] px-4 py-3 backdrop-blur">
         <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
           {format(cursor, "EEEE", { locale: ptBR })}
@@ -249,15 +261,21 @@ export function DayView({ items }: { items: Appointment[] }) {
         >
           <HourGrid zoom={zoom} />
           <CurrentTimeLine day={cursor} zoom={zoom} />
-          {dayItems.map((apt) => {
+          {laidOut.map(({ apt, column, columns }) => {
             const top = (minutesFromOpen(parseISO(apt.startsAt)) / 60) * zoom;
             const h = Math.max(22, (apt.durationMin / 60) * zoom);
             return (
               <EventCard
                 key={apt.id}
                 apt={apt}
+                compact={h < 48 || columns > 3}
                 showResize
-                style={{ top, height: h, left: 8, right: 8 }}
+                style={{
+                  top,
+                  height: h,
+                  ...overlapStyle(column, columns),
+                  zIndex: 10 + column,
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   select(apt.id);

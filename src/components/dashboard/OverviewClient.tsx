@@ -3,10 +3,10 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DashCard, DashReveal, StatusPill } from "@/components/dashboard/DashUI";
+import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
 import { IconBubble } from "@/components/ui/IconBubble";
 import { formatPrice } from "@/data/services";
 import {
-  monthlyInsights,
   occupancyByHour,
   recentReviews,
 } from "@/data/dashboard-mock";
@@ -59,8 +59,6 @@ export function OverviewClient({
   byProfessional,
   totals,
 }: Props) {
-  const maxRevenue = Math.max(...monthlyInsights.map((m) => m.revenue));
-
   return (
     <>
       <DashReveal>
@@ -122,36 +120,7 @@ export function OverviewClient({
 
       <div className="mt-10 grid gap-6 xl:grid-cols-3">
         <DashCard delay={0.15} className="p-6 xl:col-span-2">
-          <div className="flex items-center gap-3">
-            <IconBubble icon={TrendingUp} tone="soft" size={16} />
-            <div>
-              <h2 className="display text-2xl text-[var(--chocolate)]">
-                Receita mensal
-              </h2>
-              <p className="mt-0.5 text-xs text-[var(--muted)]">
-                Últimos 6 meses · mock
-              </p>
-            </div>
-          </div>
-          <div className="mt-8 flex h-44 items-end gap-3">
-            {monthlyInsights.map((m) => (
-              <div
-                key={m.monthLabel}
-                className="group flex flex-1 flex-col items-center gap-2"
-              >
-                <span className="text-[10px] text-[var(--muted)] opacity-0 transition group-hover:opacity-100">
-                  {formatPrice(m.revenue)}
-                </span>
-                <div
-                  className="w-full rounded-t-lg bg-gradient-to-t from-[var(--gold-dim)] to-[var(--gold-bright)] transition duration-300 group-hover:brightness-110"
-                  style={{ height: `${(m.revenue / maxRevenue) * 100}%` }}
-                />
-                <span className="text-[10px] tracking-[0.12em] uppercase text-[var(--muted)]">
-                  {m.monthLabel}
-                </span>
-              </div>
-            ))}
-          </div>
+          <MonthlyRevenueChart />
         </DashCard>
 
         <DashCard delay={0.2} className="p-6">

@@ -157,7 +157,7 @@ export function EventFormModal() {
               </button>
             </div>
 
-            <form onSubmit={onSubmit} className="max-h-[calc(90vh-64px)] space-y-4 overflow-y-auto px-5 py-5">
+            <form onSubmit={onSubmit} className="max-h-[calc(90vh-64px)] space-y-4 overflow-x-hidden overflow-y-auto px-5 py-5">
               <fieldset>
                 <legend className="text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
                   Cliente
@@ -169,7 +169,7 @@ export function EventFormModal() {
                   className="mt-2 w-full rounded-xl border border-[var(--line)] bg-white/60 px-3 py-2 text-sm outline-none focus:border-[var(--gold)]"
                 />
                 {clientQuery && filteredClients.length > 0 && (
-                  <ul className="mt-1 max-h-28 overflow-auto rounded-xl border border-[var(--line)] bg-white">
+                  <ul className="mt-1 max-h-28 overflow-x-hidden overflow-y-auto rounded-xl border border-[var(--line)] bg-white">
                     {filteredClients.slice(0, 6).map((c) => (
                       <li key={c.phone}>
                         <button

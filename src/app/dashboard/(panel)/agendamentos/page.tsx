@@ -132,7 +132,7 @@ export default function AgendamentosPage() {
       </div>
 
       <DashCard delay={0.1} className="mt-6 overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-hidden">
           <table className="w-full min-w-[860px] text-left text-sm">
             <thead className="border-b border-white/40 text-[10px] tracking-[0.16em] uppercase text-[var(--muted)]">
               <tr>

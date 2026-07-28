@@ -118,7 +118,7 @@ export function AgendaListView({ items }: { items: Appointment[] }) {
   }, {});
 
   return (
-    <div className="cal-scroll h-full space-y-6 overflow-auto rounded-2xl border border-white/40 bg-white/35 p-4 backdrop-blur md:p-6">
+    <div className="cal-scroll h-full space-y-6 overflow-x-hidden overflow-y-auto rounded-2xl border border-white/40 bg-white/35 p-4 backdrop-blur md:p-6">
       {Object.keys(groups).length === 0 && (
         <p className="text-sm text-[var(--muted)]">Nenhum agendamento neste filtro.</p>
       )}
