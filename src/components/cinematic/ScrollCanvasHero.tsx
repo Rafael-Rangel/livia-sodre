@@ -263,7 +263,7 @@ export function ScrollCanvasHero() {
 
       const pinEnd =
         typeof window !== "undefined" && window.innerWidth < 768
-          ? Math.max(220, Math.round(manifest.scrollPinVh * 0.72))
+          ? Math.max(280, Math.round(manifest.scrollPinVh * 0.7))
           : manifest.scrollPinVh;
 
       const tl = gsap.timeline({

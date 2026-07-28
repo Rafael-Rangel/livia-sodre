@@ -1,15 +1,41 @@
 ﻿{
-    "width":  1600,
-    "total":  120,
+    "width":  1280,
+    "total":  203,
     "basePath":  "/cinematic/frames",
-    "source":  "openai-sora-2-pro-8s-1792x1024",
-    "quality":  "hq",
-    "scrollPinVh":  360,
+    "source":  "ritual-cuidar-4-chapters-sora2",
+    "quality":  "continuous",
+    "scrollPinVh":  520,
     "formats":  [
                     "avif",
                     "webp"
                 ],
-    "height":  914,
+    "chapters":  [
+                     {
+                         "title":  "Limiar",
+                         "end":  49,
+                         "id":  "limiar",
+                         "start":  0
+                     },
+                     {
+                         "title":  "Acolhimento",
+                         "end":  99,
+                         "id":  "acolhimento",
+                         "start":  50
+                     },
+                     {
+                         "title":  "Ritual",
+                         "end":  149,
+                         "id":  "ritual",
+                         "start":  100
+                     },
+                     {
+                         "title":  "Renascimento",
+                         "end":  202,
+                         "id":  "renascimento",
+                         "start":  150
+                     }
+                 ],
+    "height":  720,
     "poster":  "/cinematic/frames/frame-000.webp",
     "pad":  3
 }
