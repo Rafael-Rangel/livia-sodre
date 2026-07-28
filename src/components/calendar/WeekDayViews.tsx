@@ -8,7 +8,7 @@ import { businessHours } from "@/lib/calendar/config";
 import {
   fromClinicLocal,
   isToday,
-  minutesFromOpen,
+  eventGeometry,
   snapMinutes,
   totalDayMinutes,
   weekDays,
@@ -167,13 +167,17 @@ export function WeekView({ items }: { items: Appointment[] }) {
                 <HourGrid zoom={zoom} />
                 <CurrentTimeLine day={d} zoom={zoom} />
                 {layoutOverlappingEvents(dayItems).map(({ apt, column, columns }) => {
-                  const top = (minutesFromOpen(parseISO(apt.startsAt)) / 60) * zoom;
-                  const h = Math.max(22, (apt.durationMin / 60) * zoom);
+                  const { top, height: h, hidden } = eventGeometry(
+                    apt.startsAt,
+                    apt.durationMin,
+                    zoom,
+                  );
+                  if (hidden) return null;
                   return (
                     <EventCard
                       key={apt.id}
                       apt={apt}
-                      compact={h < 48 || columns > 2}
+                      compact={h < 56 || columns > 2}
                       showResize
                       style={{
                         top,
@@ -262,13 +266,17 @@ export function DayView({ items }: { items: Appointment[] }) {
           <HourGrid zoom={zoom} />
           <CurrentTimeLine day={cursor} zoom={zoom} />
           {laidOut.map(({ apt, column, columns }) => {
-            const top = (minutesFromOpen(parseISO(apt.startsAt)) / 60) * zoom;
-            const h = Math.max(22, (apt.durationMin / 60) * zoom);
+            const { top, height: h, hidden } = eventGeometry(
+              apt.startsAt,
+              apt.durationMin,
+              zoom,
+            );
+            if (hidden) return null;
             return (
               <EventCard
                 key={apt.id}
                 apt={apt}
-                compact={h < 48 || columns > 3}
+                compact={h < 56 || columns > 3}
                 showResize
                 style={{
                   top,

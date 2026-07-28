@@ -2,6 +2,8 @@ import { Appointment, CalendarBlock } from "@/lib/types";
 import { services, type ServiceCategory } from "@/data/services";
 import { rooms } from "@/lib/calendar/config";
 import { normalizeStatus } from "@/lib/calendar/config";
+import { fromClinicLocal, nowInClinic } from "@/lib/calendar/time";
+import { addDays, setHours, setMinutes, startOfDay } from "date-fns";
 
 const clients = [
   ["Mariana Costa", "(21) 98888-1111", "mariana@email.com"],
@@ -201,12 +203,11 @@ export const occupancyByHour = [
 ];
 
 export function buildMockAppointments(): Appointment[] {
-  const today = new Date();
+  const today = startOfDay(nowInClinic());
+  /** Horário local da clínica → ISO UTC correto (funciona no Vercel UTC) */
   const iso = (dayOffset: number, h: number, m = 0) => {
-    const x = new Date(today);
-    x.setDate(x.getDate() + dayOffset);
-    x.setHours(h, m, 0, 0);
-    return x.toISOString();
+    const local = setMinutes(setHours(addDays(today, dayOffset), h), m);
+    return fromClinicLocal(local).toISOString();
   };
 
   // denser set for calendar demo (~48)
@@ -220,8 +221,8 @@ export function buildMockAppointments(): Appointment[] {
         : status === "finished"
           ? "paid"
           : payments[i % payments.length];
-    const dayOffset = ((i % 14) - 4);
-    const hour = 9 + (i % 9);
+    const dayOffset = (i % 14) - 4;
+    const hour = 8 + (i % 10); // 08h–17h no fuso da clínica
     const room = rooms[i % rooms.length];
     const fromServices = services.find((s) => s.id === svc.serviceId);
     return {
@@ -265,12 +266,10 @@ export function buildMockAppointments(): Appointment[] {
 }
 
 export function buildMockBlocks(): CalendarBlock[] {
-  const today = new Date();
+  const today = startOfDay(nowInClinic());
   const at = (dayOffset: number, h: number, m = 0) => {
-    const x = new Date(today);
-    x.setDate(x.getDate() + dayOffset);
-    x.setHours(h, m, 0, 0);
-    return x.toISOString();
+    const local = setMinutes(setHours(addDays(today, dayOffset), h), m);
+    return fromClinicLocal(local).toISOString();
   };
   return [
     {

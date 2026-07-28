@@ -8,30 +8,30 @@ import { rooms } from "@/lib/calendar/config";
 import { normalizeStatus } from "@/lib/calendar/config";
 
 const globalStore = globalThis as typeof globalThis & {
-  __lsAppointmentsV2?: Appointment[];
-  __lsBlocksV2?: CalendarBlock[];
-  __lsNotificationsV2?: CalendarNotification[];
+  __lsAppointmentsV3?: Appointment[];
+  __lsBlocksV3?: CalendarBlock[];
+  __lsNotificationsV3?: CalendarNotification[];
 };
 
 function store(): Appointment[] {
-  if (!globalStore.__lsAppointmentsV2) {
-    globalStore.__lsAppointmentsV2 = buildMockAppointments();
+  if (!globalStore.__lsAppointmentsV3) {
+    globalStore.__lsAppointmentsV3 = buildMockAppointments();
   }
-  return globalStore.__lsAppointmentsV2;
+  return globalStore.__lsAppointmentsV3;
 }
 
 function blocks(): CalendarBlock[] {
-  if (!globalStore.__lsBlocksV2) {
-    globalStore.__lsBlocksV2 = buildMockBlocks();
+  if (!globalStore.__lsBlocksV3) {
+    globalStore.__lsBlocksV3 = buildMockBlocks();
   }
-  return globalStore.__lsBlocksV2;
+  return globalStore.__lsBlocksV3;
 }
 
 function notifications(): CalendarNotification[] {
-  if (!globalStore.__lsNotificationsV2) {
-    globalStore.__lsNotificationsV2 = [];
+  if (!globalStore.__lsNotificationsV3) {
+    globalStore.__lsNotificationsV3 = [];
   }
-  return globalStore.__lsNotificationsV2;
+  return globalStore.__lsNotificationsV3;
 }
 
 function pushNotif(

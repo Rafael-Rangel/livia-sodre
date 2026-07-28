@@ -12,6 +12,7 @@ export type LaidOutAppointment = {
 /**
  * Google Calendar–style layout: overlapping events sit side-by-side
  * instead of stacking on top of each other.
+ * Touching edges (A ends == B starts) do NOT count as overlap.
  */
 export function layoutOverlappingEvents(
   items: Appointment[],
@@ -45,7 +46,6 @@ export function layoutOverlappingEvents(
     active.push(row);
   });
 
-  // Union overlapping events into clusters to know total column count
   const parent = placed.map((_, i) => i);
   const find = (i: number): number =>
     parent[i] === i ? i : (parent[i] = find(parent[i]));
@@ -78,12 +78,13 @@ export function layoutOverlappingEvents(
 
 /** CSS left/width so cards share the column without covering each other */
 export function overlapStyle(column: number, columns: number) {
-  const gap = 3;
+  const gap = 4;
   const widthPct = 100 / columns;
   const leftPct = column * widthPct;
   return {
     left: `calc(${leftPct}% + ${gap}px)`,
-    width: `calc(${widthPct}% - ${gap * 2}px)`,
+    width: `calc(${widthPct}% - ${gap * 1.5}px)`,
     right: "auto" as const,
+    boxSizing: "border-box" as const,
   };
 }

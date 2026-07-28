@@ -85,13 +85,18 @@ export function dayHours() {
   return slots;
 }
 
-/** Minutos desde openHour para posicionar no grid */
-export function minutesFromOpen(date: Date) {
+/**
+ * Minutos desde openHour no grid.
+ * - string ISO → converte para fuso da clínica
+ * - Date → assume relógio local da clínica (ex.: nowInClinic())
+ */
+export function minutesFromOpen(date: Date | string) {
+  const local = typeof date === "string" ? toClinicDate(date) : date;
   const open = setMinutes(
-    setHours(startOfDay(date), businessHours.openHour),
+    setHours(startOfDay(local), businessHours.openHour),
     businessHours.openMinute,
   );
-  return Math.max(0, differenceInMinutes(date, open));
+  return differenceInMinutes(local, open);
 }
 
 export function totalDayMinutes() {
@@ -100,6 +105,24 @@ export function totalDayMinutes() {
     businessHours.closeMinute -
     (businessHours.openHour * 60 + businessHours.openMinute)
   );
+}
+
+/** Posição Y/altura no grid, clipada ao horário comercial */
+export function eventGeometry(
+  startsAt: string,
+  durationMin: number,
+  zoom: number,
+) {
+  const startMin = minutesFromOpen(startsAt);
+  const endMin = startMin + Math.max(5, durationMin);
+  const dayTotal = totalDayMinutes();
+  const visibleStart = Math.min(dayTotal, Math.max(0, startMin));
+  const visibleEnd = Math.min(dayTotal, Math.max(visibleStart + 5, endMin));
+  // 1px de folga evita cards sequenciais “entrarem” um no outro
+  const rawHeight = ((visibleEnd - visibleStart) / 60) * zoom;
+  const top = (visibleStart / 60) * zoom;
+  const height = Math.max(22, rawHeight - 1);
+  return { top, height, hidden: visibleEnd <= 0 || visibleStart >= dayTotal };
 }
 
 export function isToday(date: Date) {

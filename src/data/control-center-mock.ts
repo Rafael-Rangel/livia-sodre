@@ -2,7 +2,7 @@ import { addDays, format, setHours, setMinutes, startOfDay } from "date-fns";
 import { categoryLabels } from "@/data/services";
 import { team } from "@/data/team";
 import { monthlyInsights } from "@/data/dashboard-mock";
-import { nowInClinic } from "@/lib/calendar/time";
+import { fromClinicLocal, nowInClinic } from "@/lib/calendar/time";
 import type { Appointment } from "@/lib/types";
 import type {
   AiInsight,
@@ -18,7 +18,7 @@ export function buildControlCenterMock() {
   const todayStart = startOfDay(now);
 
   const at = (h: number, m = 0) =>
-    setMinutes(setHours(todayStart, h), m).toISOString();
+    fromClinicLocal(setMinutes(setHours(todayStart, h), m)).toISOString();
 
   const dayAgenda: Appointment[] = [
     {
