@@ -48,7 +48,7 @@ export function endsAtFrom(startsAt: string, durationMin: number) {
 export function formatTimeRange(startsAt: string, durationMin: number) {
   const start = toClinicDate(startsAt);
   const end = addMinutes(start, durationMin);
-  return `${format(start, "HH:mm")} – ${format(end, "HH:mm")}`;
+  return `${format(start, "HH:mm")} às ${format(end, "HH:mm")}`;
 }
 
 export function formatDayLabel(date: Date) {

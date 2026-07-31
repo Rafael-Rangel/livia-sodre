@@ -176,7 +176,7 @@ export const recentReviews = [
     id: "rv-3",
     clientName: "Amanda R.",
     rating: 5,
-    text: "A Yamê é incrível — ventosa e acolhimento de outro nível.",
+    text: "A Yamê é incrível: ventosa e acolhimento de outro nível.",
     serviceName: "Ventosaterapia",
     date: "2026-07-24",
   },

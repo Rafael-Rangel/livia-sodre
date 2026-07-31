@@ -10,59 +10,42 @@ export type StoryBeat = {
 };
 
 /**
- * Beats aligned to full-video frames:
- * hero-master 0–244 (fachada→entrada→recepção→acolhimento com as duas)
- * sora-hero-8s 245–364 (atmosfera)
+ * Beats for the active scroll film:
+ * sora-hero-8s only (frames 245–364) - atmosfera interior
  */
 export const storyBeats: StoryBeat[] = [
   {
     id: "limiar",
     from: 0,
-    to: 0.16,
+    to: 0.22,
     eyebrow: "O Ritual do Cuidar",
     script: "cuidado",
     title: "Lívia Sodré",
-    body: "O cuidado começa antes da porta — no silêncio da fachada que te convida.",
+    body: "Entre no espaço onde cada detalhe foi pensado para acolher você.",
   },
   {
-    id: "entrada",
-    from: 0.16,
-    to: 0.33,
-    eyebrow: "Entrada",
-    title: "Cruze o limiar",
-    body: "A câmera te acompanha pela porta. O espaço respira com você.",
-  },
-  {
-    id: "recepcao",
-    from: 0.33,
-    to: 0.49,
-    eyebrow: "Recepção",
-    title: "Seu atendimento começa aqui",
-    body: "Luz quente, flores e acolhimento — do primeiro olhar ao cuidado.",
-  },
-  {
-    id: "acolhimento",
-    from: 0.49,
-    to: 0.67,
-    eyebrow: "Acolhimento",
-    title: "Você é vista de verdade",
-    body: "Aqui você é cuidada por quem realmente faz a diferença.",
-  },
-  {
-    id: "atmosfera",
-    from: 0.67,
-    to: 0.88,
+    id: "ambiente",
+    from: 0.22,
+    to: 0.48,
     eyebrow: "Ambiente",
-    title: "Tecnologia e cuidado em cada detalhe",
-    body: "O espaço continua — texturas, luz e a calma de um ritual premium.",
+    title: "Luz, textura e calma",
+    body: "Arcos, mármore e o monograma LS: a atmosfera de um ritual premium.",
+  },
+  {
+    id: "experiencia",
+    from: 0.48,
+    to: 0.72,
+    eyebrow: "Experiência",
+    title: "Tecnologia e cuidado",
+    body: "Cada canto da clínica respira elegância e bem-estar em silêncio.",
   },
   {
     id: "convite",
-    from: 0.88,
+    from: 0.72,
     to: 1.01,
     eyebrow: "Agende",
     title: "Sua melhor versão começa hoje",
-    body: "Escolha o serviço e reserve em poucos cliques — beleza que transforma.",
+    body: "Escolha o serviço e reserve em poucos cliques. Beleza que transforma.",
     showCta: true,
   },
 ];

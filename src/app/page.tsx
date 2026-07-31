@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { ScrollFilm } from "@/components/cinematic/ScrollFilm";
+import { PremiumLoader } from "@/components/cinematic/PremiumLoader";
 import { Services } from "@/components/landing/Services";
 import { Team } from "@/components/landing/Team";
 import { About } from "@/components/landing/About";
@@ -9,9 +10,10 @@ import { Footer } from "@/components/landing/Footer";
 export default function HomePage() {
   return (
     <>
+      <PremiumLoader />
       <Navbar />
       <main>
-        {/* Full narrative: scroll controls frames — never plays video */}
+        {/* Full narrative: scroll controls frames - never plays video */}
         <ScrollFilm />
         <Services />
         <Team />

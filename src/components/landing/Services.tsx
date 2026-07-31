@@ -81,7 +81,7 @@ export function Services() {
           </h2>
           <p className="mt-4 text-[var(--muted)] leading-relaxed">
             Do design de sobrancelhas à micropigmentação, estética facial,
-            corporal e nail design — escolha o cuidado ideal e agende em poucos
+            corporal e nail design. Escolha o cuidado ideal e agende em poucos
             passos.
           </p>
         </div>

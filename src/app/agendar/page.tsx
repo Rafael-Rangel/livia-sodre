@@ -20,7 +20,7 @@ export default function AgendarPage() {
             Agende seu horário
           </h1>
           <p className="mt-4 text-[var(--muted)]">
-            Sistema nativo da clínica — rápido, elegante e integrado.
+            Sistema nativo da clínica: rápido, elegante e integrado.
           </p>
           <Link
             href="/servicos"

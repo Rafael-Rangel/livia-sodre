@@ -24,7 +24,7 @@ export function BookingCTA() {
         </h2>
         <p className="mt-5 max-w-xl text-[var(--muted)] leading-relaxed">
           Escolha o serviço, a profissional e o horário. Recebemos seu pedido
-          na hora — sem depender de plataformas externas.
+          na hora, sem depender de plataformas externas.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link href="/agendar" className="btn-primary inline-flex items-center gap-2">

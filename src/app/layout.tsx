@@ -28,7 +28,7 @@ const body = Outfit({
 export const metadata: Metadata = {
   title: "Lívia Sodré | Estética Avançada, Micropigmentação e Spa",
   description:
-    "Clínica de estética em Guaratiba — micropigmentação, estética facial e corporal, cílios, unhas e spa. Beleza que transforma. Cuidado que conecta.",
+    "Clínica de estética em Guaratiba: micropigmentação, estética facial e corporal, cílios, unhas e spa. Beleza que transforma. Cuidado que conecta.",
   openGraph: {
     title: "Lívia Sodré Estética Avançada",
     description: "Beleza que transforma. Cuidado que conecta.",
@@ -51,13 +51,13 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/cinematic/frames/frame-000.webp"
+          href="/cinematic/frames/frame-245.webp"
           type="image/webp"
         />
         <link
           rel="preload"
           as="image"
-          href="/cinematic/frames/frame-001.webp"
+          href="/cinematic/frames/frame-246.webp"
           type="image/webp"
         />
       </head>

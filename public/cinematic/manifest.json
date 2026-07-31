@@ -2,24 +2,20 @@
   "width": 1600,
   "height": 900,
   "total": 365,
-  "startFrame": 0,
+  "startFrame": 245,
   "pad": 3,
   "basePath": "/cinematic/frames",
-  "source": "hero-master+sora-hero-8s",
+  "source": "sora-hero-8s",
   "quality": "max",
-  "scrollPinVh": 680,
+  "scrollPinVh": 320,
   "formats": ["webp"],
-  "poster": "/cinematic/frames/frame-000.webp",
+  "poster": "/cinematic/frames/frame-245.webp",
   "mode": "scroll-film",
   "playback": "none",
-  "videos": ["hero-master.mp4", "sora-hero-8s.mp4"],
-  "excluded": ["sora-hero-4s.mp4", "sora-pro-8s.mp4"],
+  "videos": ["sora-hero-8s.mp4"],
+  "excluded": ["hero-master.mp4", "sora-hero-4s.mp4", "sora-pro-8s.mp4"],
   "chapters": [
-    { "id": "01-fachada", "title": "Fachada", "start": 0, "end": 59 },
-    { "id": "02-entrada", "title": "Entrada", "start": 60, "end": 119 },
-    { "id": "03-recepcao", "title": "Recepção", "start": 120, "end": 179 },
-    { "id": "04-acolhimento", "title": "Acolhimento", "start": 180, "end": 244 },
     { "id": "05-atmosfera", "title": "Atmosfera", "start": 245, "end": 364 }
   ],
-  "note": "Full videos: hero-master.mp4 (entire) + sora-hero-8s.mp4 (entire). Excluded sora-hero-4s and sora-pro-8s. All frames 0–364 used."
+  "note": "Hero starts at sora-hero-8s only (frames 245-364). hero-master fachada/entrada excluded from scroll film."
 }

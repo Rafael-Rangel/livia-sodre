@@ -311,14 +311,14 @@ export function getAgendaMetrics() {
     return acc;
   }, {});
   const topPro =
-    Object.entries(byPro).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+    Object.entries(byPro).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
 
   const bySvc = active.reduce<Record<string, number>>((acc, a) => {
     acc[a.serviceName] = (acc[a.serviceName] || 0) + 1;
     return acc;
   }, {});
   const topSvc =
-    Object.entries(bySvc).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+    Object.entries(bySvc).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
 
   const occupiedSlots = active.reduce((s, a) => s + a.durationMin, 0);
   const dayCapacity = 8 * 60 * 4; // 4 pros × 8h

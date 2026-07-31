@@ -70,7 +70,7 @@ export function OverviewClient({
           Olá, Lívia
         </h1>
         <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">
-          Painel com agenda, financeiro e desempenho — dados de demonstração
+          Painel com agenda, financeiro e desempenho. Dados de demonstração
           para visualizar o fluxo completo da clínica.
         </p>
       </DashReveal>

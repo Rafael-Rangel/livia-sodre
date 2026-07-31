@@ -53,7 +53,7 @@ export function FinanceiroClient({
           Caixa da clínica
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Recebimentos, pendências e canais de pagamento — demo com dados
+          Recebimentos, pendências e canais de pagamento. Demo com dados
           mockados.
         </p>
       </DashReveal>

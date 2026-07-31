@@ -39,8 +39,8 @@ export default function ServicosPage() {
             Todos os serviços
           </h1>
           <p className="mt-4 max-w-2xl text-[var(--muted)]">
-            Explore o cardápio completo da clínica. Valores a partir de — a
-            confirmação final é feita no agendamento.
+            Explore o cardápio completo da clínica. Os valores finais são
+            confirmados no agendamento.
           </p>
 
           <div className="mt-14 space-y-14">

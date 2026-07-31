@@ -12,7 +12,7 @@ import type {
 } from "@/lib/control-center/types";
 import type { ServiceCategory } from "@/data/services";
 
-/** Demo seed — always fills the control center with rich clinic data */
+/** Demo seed - always fills the control center with rich clinic data */
 export function buildControlCenterMock() {
   const now = nowInClinic();
   const todayStart = startOfDay(now);
@@ -316,7 +316,7 @@ export function buildControlCenterMock() {
   ];
 
   const insights: AiInsight[] = [
-    { id: "i1", tag: "Agenda", severity: "warn", text: "Hoje existem 3 horários vagos entre 14h e 16h — oportunidade para encaixe rápido." },
+    { id: "i1", tag: "Agenda", severity: "warn", text: "Hoje existem 3 horários vagos entre 14h e 16h: oportunidade para encaixe rápido." },
     { id: "i2", tag: "Procedimentos", severity: "success", text: "O Botox aumentou 25% em relação à semana passada." },
     { id: "i3", tag: "Equipe", severity: "success", text: "A profissional Lívia atingiu 92% da meta do dia." },
     { id: "i4", tag: "Retenção", severity: "critical", text: "Cinco clientes estão há mais de 90 dias sem retornar." },

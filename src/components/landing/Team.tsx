@@ -8,11 +8,13 @@ import { useGSAP } from "@gsap/react";
 import { team } from "@/data/team";
 import { aboutCopy } from "@/data/content";
 import { Sparkles, Users } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export function Team() {
   const root = useRef<HTMLElement>(null);
+  const founder = team.find((m) => m.id === "livia");
   const members = team.filter((m) => m.id !== "livia");
 
   useGSAP(
@@ -59,6 +61,51 @@ export function Team() {
           </p>
         </div>
 
+        {founder && (
+          <article className="team-card mb-10 grid items-center gap-8 overflow-hidden rounded-[1.75rem] border border-white/50 bg-gradient-to-br from-[#faf6f0] via-[#f0e6d8] to-[#e4d5c3] p-5 md:grid-cols-[minmax(0,0.95fr)_1.1fr] md:gap-10 md:p-8">
+            <div className="arch-frame relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden bg-[var(--nude-deep)] md:mx-0">
+              <Image
+                src={founder.image}
+                alt={founder.name}
+                fill
+                sizes="(max-width: 768px) 90vw, 40vw"
+                quality={95}
+                priority
+                className="object-cover object-[center_12%] transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(44,31,26,0.35)] via-transparent to-transparent" />
+            </div>
+            <div>
+              <p className="eyebrow">Fundadora</p>
+              <h3 className="script mt-2 text-5xl text-[var(--gold)] md:text-6xl">
+                {founder.name}
+              </h3>
+              <p className="mt-3 text-xs tracking-[0.14em] uppercase text-[var(--brown)]">
+                {founder.role}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {founder.specialties.map((sp) => (
+                  <span
+                    key={sp}
+                    className="inline-flex items-center gap-1 border border-[var(--line)] bg-white/45 px-2.5 py-1 text-[10px] tracking-[0.12em] uppercase text-[var(--muted)]"
+                  >
+                    <Sparkles size={9} strokeWidth={2} />
+                    {sp}
+                  </span>
+                ))}
+              </div>
+              {founder.bio.map((line) => (
+                <p
+                  key={line}
+                  className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--brown)] md:text-base"
+                >
+                  {line}
+                </p>
+              ))}
+            </div>
+          </article>
+        )}
+
         <div className="grid gap-8 md:grid-cols-3">
           {members.map((m) => (
             <article key={m.id} className="team-card group">
@@ -69,7 +116,10 @@ export function Team() {
                   fill
                   sizes="(max-width: 768px) 90vw, 30vw"
                   quality={95}
-                  className="object-cover object-[center_18%] transition-transform duration-700 group-hover:scale-105"
+                  className={cn(
+                    "object-cover transition-transform duration-700 group-hover:scale-105",
+                    "object-[center_18%]",
+                  )}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(44,31,26,0.55)] via-transparent to-transparent" />
                 <div className="absolute right-4 top-4 rounded-full bg-[rgba(250,246,240,0.9)] p-2 text-[var(--gold-dim)] shadow-sm backdrop-blur">

@@ -46,7 +46,7 @@ export function Hero() {
             Beleza que transforma
           </p>
           <p className="hero-sub mt-5 max-w-md text-[var(--muted)] leading-relaxed">
-            {brand.tagline} Clínica de estética avançada em Guaratiba — cuidado
+            {brand.tagline} Clínica de estética avançada em Guaratiba, com cuidado
             personalizado para realçar o que já é naturalmente seu.
           </p>
           <div className="hero-cta mt-10 flex flex-wrap gap-3">

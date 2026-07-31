@@ -79,6 +79,20 @@ export function ScrollFilm() {
   }, []);
 
   useEffect(() => {
+    if (reduced) {
+      window.dispatchEvent(
+        new CustomEvent("ls-loader", { detail: { pct: 100, ready: true } }),
+      );
+      return;
+    }
+    window.dispatchEvent(
+      new CustomEvent("ls-loader", {
+        detail: { pct: loadPct, ready },
+      }),
+    );
+  }, [loadPct, ready, reduced]);
+
+  useEffect(() => {
     if (!manifest || reduced) return;
 
     const preferAvif = supportsAvif() && manifest.formats.includes("avif");
@@ -300,7 +314,7 @@ export function ScrollFilm() {
       <section className="texture relative flex min-h-[100svh] items-end px-5 pb-16 pt-28 md:px-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/cinematic/frames/frame-060.webp"
+          src="/cinematic/frames/frame-245.webp"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -329,7 +343,7 @@ export function ScrollFilm() {
     <section
       ref={rootRef}
       className="relative h-[100svh] overflow-hidden bg-[var(--nude)]"
-      aria-label="Filme interativo Lívia Sodré — controlado pelo scroll"
+      aria-label="Filme interativo Lívia Sodré, controlado pelo scroll"
     >
       <canvas
         ref={canvasRef}
@@ -340,7 +354,7 @@ export function ScrollFilm() {
       {!ready && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={manifest?.poster || "/cinematic/frames/frame-000.webp"}
+          src={manifest?.poster || "/cinematic/frames/frame-245.webp"}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"

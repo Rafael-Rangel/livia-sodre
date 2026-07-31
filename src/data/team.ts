@@ -10,6 +10,17 @@ export type Professional = {
 
 export const team: Professional[] = [
   {
+    id: "livia",
+    name: "Lívia Sodré",
+    role: "Fundadora · Estética Avançada",
+    image: "/team/livia.webp",
+    specialties: ["Micropigmentação", "Gestão clínica", "Atendimento premium"],
+    bio: [
+      "Criou um espaço onde beleza e bem-estar caminham juntas, com profissionais que realmente fazem a diferença.",
+      "Cada atendimento é pensado para realçar o que já é naturalmente seu.",
+    ],
+  },
+  {
     id: "yame",
     name: "Yamê",
     role: "Esteticista · Pós-graduada em Acupuntura",
@@ -40,17 +51,6 @@ export const team: Professional[] = [
     bio: [
       "Especialista em beleza e cuidado das mãos. Com técnica apurada e delicadeza, transforma unhas em símbolos de autoestima.",
       "Apaixonada pelo que faz, oferece atendimento acolhedor e personalizado em cada visita.",
-    ],
-  },
-  {
-    id: "livia",
-    name: "Lívia Sodré",
-    role: "Fundadora · Estética Avançada",
-    image: "/brand/logo.png",
-    specialties: ["Micropigmentação", "Gestão clínica", "Atendimento premium"],
-    bio: [
-      "Criou um espaço onde beleza e bem-estar caminham juntas, com profissionais que realmente fazem a diferença.",
-      "Cada atendimento é pensado para realçar o que já é naturalmente seu.",
     ],
   },
 ];
